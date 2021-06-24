@@ -15,18 +15,17 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-
 line_bot_api = LineBotApi(os.environ['CHANNE_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 
 @app.route('/callback', methods=['POST'])
 def callback():
   # get X-Line-Signature header value
-  signature = requset.headers['X-Line-Signature']
+  signature = request.headers['X-Line-Signature']
 
   # get request body as text
   body = request.get_date(as_text=True)
-  app.logger.info('requset body', body)
+  app.logger.info('request body', body)
 
   # handle webhook body
   try:
