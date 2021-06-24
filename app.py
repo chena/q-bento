@@ -29,13 +29,13 @@ def callback():
 
   # handle webhook body
   try:
-    handler.handle_message(body, signature)
+    handler.handle(body, signature)
   except InvalidSignatureError:
     print('Invalid signature. Please check your channel access token/secret.')
   return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
+def handle(event):
   line_bot_api.reply_message(
     event.reply_token,
     TextSendMessage(text=event.message.text))
