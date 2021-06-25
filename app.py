@@ -70,7 +70,7 @@ def find_user(line_id):
 def new_user(line_id, name='Alice Chen'):
   cur = conn.cursor()
   # new user entry
-  val = cur.execute("INSERT INTO users (line_id, name) VALUES (%s, %s);", (line_id, name))
+  val = cur.execute("INSERT INTO users (line_id, name, created_at) VALUES (%s, %s, %s);", (line_id, name, now()))
   cur.close()
   return val
 
