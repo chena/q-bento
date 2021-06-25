@@ -50,7 +50,7 @@ def handle_message(event):
     restaurant, date = tokens[1:]
     user_line_id = event.source.user_id
     print(user_line_id)
-    new_user(user_line_id)
+    # new_user(user_line_id)
     new_bento(find_user(user_line_id), find_restaurant(restaurant), date)
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
@@ -78,7 +78,7 @@ def new_user(line_id, name='Alice Chen'):
 def new_bento(user_id, restaurant_id, order_date):
   cur = conn.cursor()
   # new bento entry
-  cur.execute("INSERT INTO bentos (user_id, restaurant_id, order_date) VALUES (%s, %s, %s);", (user_id, restaurant_id, order_date))
+  cur.execute("INSERT INTO bentos (user_id, restaurant_id, order_date, created_at) VALUES (%s, %s, %s, %s);", (user_id, restaurant_id, order_date, datetime.now()))
   conn.commit()
   cur.close()
 
