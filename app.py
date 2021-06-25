@@ -56,14 +56,14 @@ def handle_message(event):
 
 def find_restaurant(name):
   cur = conn.cursor()
-  cur.execute("SELECT id FROM restauratns WHERE name = '%s';", (name))
+  cur.execute("SELECT id FROM restauratns WHERE name = %s;", (name,))
   id = cur.fetchone()[0]
   cur.close()
   return id
 
 def find_user(line_id):
   cur = conn.cursor()
-  cur.execute("SELECT id FROM users WHERE line_id = '%s';", (line_id))
+  cur.execute("SELECT id FROM users WHERE line_id = %s;", (line_id,))
   id = cur.fetchone()[0]
   cur.close()
   return id
