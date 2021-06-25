@@ -56,7 +56,7 @@ def handle_message(event):
 
 def find_restaurant(name):
   cur = conn.cursor()
-  cur.execute("SELECT id FROM restauratns WHERE name = %s;", (name,))
+  cur.execute("SELECT id FROM restaurants WHERE name = %s;", (name,))
   id = cur.fetchone()[0]
   cur.close()
   return id
@@ -72,12 +72,14 @@ def new_user(line_id, name='Alice Chen'):
   cur = conn.cursor()
   # new user entry
   cur.execute("INSERT INTO users (line_id, name, created_at) VALUES (%s, %s, %s);", (line_id, name, datetime.now()))
+  conn.commit()
   cur.close()
 
 def new_bento(user_id, restaurant_id, order_date):
   cur = conn.cursor()
   # new bento entry
   cur.execute("INSERT INTO bentos (user_id, restaurant_id, order_date) VALUES (%s, %s, %s);", (user_id, restaurant_id, order_date))
+  conn.commit()
   cur.close()
 
 if __name__ == '__main__':
