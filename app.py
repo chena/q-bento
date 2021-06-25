@@ -51,7 +51,7 @@ def handle_message(event):
     user_line_id = event.source.user_id
     print(user_line_id)
     new_user(user_line_id)
-    new_bento(find_user(user_line_id), find_restaurant(name), date)
+    new_bento(find_user(user_line_id), find_restaurant(restaurant), date)
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def find_restaurant(name):
