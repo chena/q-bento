@@ -49,20 +49,20 @@ def handle_message(event):
     restaurant, date = tokens[1:]
     user_line_id = event.source.user_id
     print(user_line_id)
-    new_user(user_line_id)
-    new_bento(find_user(user_line_id), find_restaurant(name), date)
+    print(new_user(user_line_id))
+    print(new_bento(find_user(user_line_id), find_restaurant(name), date))
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def find_restaurant(name):
   cur = conn.cursor()
-  cur.execute("SELECT id FROM restauratns where name = %;", name)
+  cur.execute("SELECT id FROM restauratns WHERE name = %s;", (name))
   id = cur.fetchone()[0]
   cur.close()
   return id
 
 def find_user(line_id):
   cur = conn.cursor()
-  cur.execute("SELECT id FROM users where line_id = %;", line_id)
+  cur.execute("SELECT id FROM users WHERE line_id = %s;", (line_id))
   id = cur.fetchone()[0]
   cur.close()
   return id
@@ -70,14 +70,16 @@ def find_user(line_id):
 def new_user(line_id, name='Alice Chen'):
   cur = conn.cursor()
   # new user entry
-  cur.execute("INSERT INTO users (line_id, name) values (%, %);", (line_id, name))
+  val = cur.execute("INSERT INTO users (line_id, name) VALUES (%s, %s);", (line_id, name))
   cur.close()
+  return val
 
 def new_bento(user_id, restaurant_id, order_date):
   cur = conn.cursor()
   # new bento entry
-  cur.execute("INSERT INTO bentos (user_id, restaurant_id, order_date) values (%, %, %);", (user_id, restaurant_id, order_date))
+  val = cur.execute("INSERT INTO bentos (user_id, restaurant_id, order_date) VALUES (%s, %s, %s);", (user_id, restaurant_id, order_date))
   cur.close()
+  return val
 
 if __name__ == '__main__':
   app.run()
