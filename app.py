@@ -45,17 +45,26 @@ def handle_message(event):
   message = event.message.text.lower()
   response = message
   tokens = message.split()
+  token_count = len(tokens)
 
   if (tokens[0].startswith('bento')):
-    if len(tokens) == 2:
+    if token_count == 1:
+      response = 'Usage: "bento [restaurant] [date] [items]"'
+    if token_count == 2:
       restaurant = tokens[1]
       freq = check_frequency(restaurant)
       response = 'You ate at {} {} times during quarantine!'.format(restaurant, freq)
-    elif len(tokens) > 2:
-      restaurant, date = tokens[1:]
+    elif token_count > 4:
+      response = 'Invalid: please follow format "bento [restaurant] [date] [items]"'
+    else:
+      restaurant, date = tokens[1:3]
       user_id = get_or_create_user(event.source.user_id)
       restaurant_id = get_or_create_restaurant(restaurant)
-      new_bento(user_id, restaurant_id, date)
+      if token_count == 3:
+        new_bento(user_id, restaurant_id, date)
+      else: # with options
+        items = tokens[3]
+        new_bento(user_id, restaurant_id, date, items)
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def check_frequency(restaurant):
@@ -92,11 +101,11 @@ def new_user(line_id, name='Alice Chen'):
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
-def new_bento(user_id, restaurant_id, order_date):
+def new_bento(user_id, restaurant_id, order_date, items=None):
   __insert("""
-    INSERT INTO bentos (user_id, restaurant_id, order_date, created_at) 
-    VALUES (%s, %s, %s, %s);
-    """, (user_id, restaurant_id, order_date, datetime.now()))
+    INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, items) 
+    VALUES (%s, %s, %s, %s, %s);
+    """, (user_id, restaurant_id, order_date, datetime.now(), items))
 
 def new_restaurant(name):
   __insert("""
