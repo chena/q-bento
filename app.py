@@ -68,7 +68,7 @@ def get_or_create_user(line_id):
     return new_user(line_id)
 
 def find_restaurant(name):
-  return __("SELECT id FROM restaurants WHERE name = %s;", (name,))
+  return __find_first("SELECT id FROM restaurants WHERE name = %s;", (name,))
 
 def find_user(line_id):
   return __find_first("SELECT id FROM users WHERE line_id = %s;", (line_id,))
