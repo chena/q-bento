@@ -46,12 +46,25 @@ def handle_message(event):
   response = message
   tokens = message.split()
 
-  if (tokens[0].startswith('bento') and len(tokens) > 2):
-    restaurant, date = tokens[1:]
-    user_id = get_or_create_user(event.source.user_id)
-    restaurant_id = get_or_create_restaurant(restaurant)
-    new_bento(user_id, restaurant_id, date)
+  if (tokens[0].startswith('bento')):
+    if len(tokens) == 2:
+      restaurant = tokens[1]
+      freq = check_frequency(restaurant)
+      response = 'You ate at {} {} times during quarantine!'.format(restaurant, freq)
+    elif len(tokens) > 2:
+      restaurant, date = tokens[1:]
+      user_id = get_or_create_user(event.source.user_id)
+      restaurant_id = get_or_create_restaurant(restaurant)
+      new_bento(user_id, restaurant_id, date)
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
+
+def check_frequency(restaurant):
+  sql = """
+    SELECT COUNT(*) FROM bentos b
+    JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE r.name = %s;
+  """
+  return __get_first_row(sql, (restaurant,))
 
 def get_or_create_restaurant(name):
   found_rest = find_restaurant(name)
@@ -68,10 +81,10 @@ def get_or_create_user(line_id):
     return new_user(line_id)
 
 def find_restaurant(name):
-  return __find_first("SELECT id FROM restaurants WHERE name = %s;", (name,))
+  return __get_first_row("SELECT id FROM restaurants WHERE name = %s;", (name,))
 
 def find_user(line_id):
-  return __find_first("SELECT id FROM users WHERE line_id = %s;", (line_id,))
+  return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
 
 def new_user(line_id, name='Alice Chen'):
   __insert("""
@@ -97,7 +110,7 @@ def __insert(sql, param):
   conn.commit()
   cur.close()
 
-def __find_first(sql, param):
+def __get_first_row(sql, param):
   cur = conn.cursor()
   cur.execute(sql, param)
   try:
