@@ -68,44 +68,44 @@ def get_or_create_user(line_id):
     return new_user(line_id)
 
 def find_restaurant(name):
-  cur = conn.cursor()
-  cur.execute("SELECT id FROM restaurants WHERE name = %s;", (name,))
-  res = cur.fetchone()
-  cur.close()
-  if res:
-    return res[0]
+  return __("SELECT id FROM restaurants WHERE name = %s;", (name,))
 
 def find_user(line_id):
-  cur = conn.cursor()
-  cur.execute("SELECT id FROM users WHERE line_id = %s;", (line_id,))
-  res = cur.fetchone()
-  cur.close()
-  if res:
-    return res[0]
+  return __find_first("SELECT id FROM users WHERE line_id = %s;", (line_id,))
 
 def new_user(line_id, name='Alice Chen'):
-  _insert("""
+  __insert("""
     INSERT INTO users (line_id, name, created_at)
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
 def new_bento(user_id, restaurant_id, order_date):
-  _insert("""
+  __insert("""
     INSERT INTO bentos (user_id, restaurant_id, order_date, created_at) 
     VALUES (%s, %s, %s, %s);
     """, (user_id, restaurant_id, order_date, datetime.now()))
 
 def new_restaurant(name):
-  _insert("""
+  __insert("""
     INSERT INTO restaurants (name, created_at) 
     VALUES (%s, %s);
     """, (name, datetime.now()))
 
-def _insert(sql, param):
+def __insert(sql, param):
   cur = conn.cursor()
   cur.execute(sql, param)
   conn.commit()
   cur.close()
+
+def __find_first(sql, param):
+  cur = conn.cursor()
+  cur.execute(sql, param)
+  try:
+    res = cur.fetchone()
+    if res:
+      return res[0]
+  finally:
+    cur.close()
 
 if __name__ == '__main__':
   app.run()
