@@ -86,24 +86,24 @@ def find_user(line_id):
 def new_user(line_id, name='Alice Chen'):
   _insert("""
     INSERT INTO users (line_id, name, created_at)
-    VALUES (%s, %s, %s);", (line_id, name, datetime.now())
-    """)
+    VALUES (%s, %s, %s);
+    """, (line_id, name, datetime.now()))
 
 def new_bento(user_id, restaurant_id, order_date):
   _insert("""
     INSERT INTO bentos (user_id, restaurant_id, order_date, created_at) 
-    VALUES (%s, %s, %s, %s);", (user_id, restaurant_id, order_date, datetime.now())
-    """)
+    VALUES (%s, %s, %s, %s);
+    """, (user_id, restaurant_id, order_date, datetime.now()))
 
 def new_restaurant(name):
   _insert("""
     INSERT INTO restaurants (name, created_at) 
-    VALUES (%s, %s);", (name, datetime.now()))
-    """)
+    VALUES (%s, %s);
+    """, (name, datetime.now()))
 
-def _insert(sql):
+def _insert(sql, param):
   cur = conn.cursor()
-  cur.execute(sql)
+  cur.execute(sql, param)
   conn.commit()
   cur.close()
 
