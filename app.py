@@ -103,7 +103,7 @@ def new_restaurant(name):
 
 def _insert(sql):
   cur = conn.cursor()
-  cur.execute(aql)
+  cur.execute(sql)
   conn.commit()
   cur.close()
 
