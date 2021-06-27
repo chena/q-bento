@@ -122,10 +122,9 @@ def __insert(sql, param):
 
 def __get_first_row(sql, param):
   cur.execute(sql, param)
-  try:
-    res = cur.fetchone()
-    if res:
-      return res[0]
+  res = cur.fetchone()
+  if res:
+    return res[0]
 
 if __name__ == '__main__':
   app.run()
