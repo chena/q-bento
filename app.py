@@ -18,6 +18,7 @@ from linebot.models import (
 
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+cur = conn.cursor()
 
 app = Flask(__name__)
 
@@ -116,22 +117,20 @@ def new_restaurant(name):
     """, (name, datetime.now()))
 
 def __insert(sql, param):
-  cur = conn.cursor()
+  # cur = conn.cursor()
   cur.execute(sql, param)
   conn.commit()
-  cur.close()
+  # cur.close()
 
 def __get_first_row(sql, param):
-  cur = conn.cursor()
   cur.execute(sql, param)
-  res = None
   try:
     res = cur.fetchone()
     if res:
-      res = res[0]
-  finally:
-    cur.close()
-    return res
+      return res[0]
+  # finally:
+  #   cur.close()
+  #   return res
 
 if __name__ == '__main__':
   app.run()
