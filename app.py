@@ -117,10 +117,8 @@ def new_restaurant(name):
     """, (name, datetime.now()))
 
 def __insert(sql, param):
-  # cur = conn.cursor()
   cur.execute(sql, param)
   conn.commit()
-  # cur.close()
 
 def __get_first_row(sql, param):
   cur.execute(sql, param)
@@ -128,9 +126,6 @@ def __get_first_row(sql, param):
     res = cur.fetchone()
     if res:
       return res[0]
-  # finally:
-  #   cur.close()
-  #   return res
 
 if __name__ == '__main__':
   app.run()
