@@ -98,7 +98,7 @@ def bot_reply(reply_token, response):
 
 def from_keywords(keyword):
   sql = """
-    SELECT r.name, b.items FROM restaurants r
+    SELECT DISTINCT(r.name) FROM restaurants r
     JOIN bentos b ON b.restaurant_id = r.id
     WHERE b.items LIKE %s ESCAPE '';
   """
