@@ -54,14 +54,14 @@ def handle_message(event):
     if token_count == 2:
       restaurant = tokens[1]
       freq = check_frequency(restaurant)
-      response = 'You ate at {} {} times during quarantine!'.format(restaurant, freq)
+      response = 'You ordered from {} {} times during quarantine!'.format(restaurant, freq)
     elif token_count > 4:
       response = 'Invalid: please follow format "bento [restaurant] [date] [items]"'
     else:
       restaurant, date = tokens[1:3]
       user_id = get_or_create_user(event.source.user_id)
       restaurant_id = get_or_create_restaurant(restaurant)
-      if date.lower() == 'today':
+      if date.lower() == 'today' or date == '今天':
         date = datetime.now()
       if token_count == 3:
         new_bento(user_id, restaurant_id, date)
