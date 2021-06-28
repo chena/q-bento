@@ -44,6 +44,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
   message = event.message.text.lower()
+  reply_token = event.reply_token
   response = message
   tokens = message.split()
   token_count = len(tokens)
@@ -52,19 +53,19 @@ def handle_message(event):
     return bot_reply(response)
     
   if token_count == 1:
-    return bot_reply('Usage: "bento [restaurant] [date] [items]"')
+    return bot_reply(reply_token, 'Usage: "bento [restaurant] [date] [items]"')
   if token_count > 4:
-    return bot_reply('Invalid: please follow format "bento [restaurant] [date] [items]"')
+    return bot_reply(reply_token, 'Invalid: please follow format "bento [restaurant] [date] [items]"')
   
   if token_count == 2:
     restaurant = tokens[1]
     freq = check_frequency(restaurant)
-    return bot_reply('You ordered from {} {} times during quarantine!'.format(restaurant, freq))
+    return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
   restaurant, option = tokens[1:3]
   if option.lower() == 'when':
     last_time = last_order_date(restaurant).strftime("%m/%d")
-    return bot_reply('Your most recent order from {} is on {}.'.format(restaurant, last_time))
+    return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
 
   user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
@@ -75,10 +76,10 @@ def handle_message(event):
   else: # with items
     items = tokens[3]
     new_bento(user_id, restaurant_id, option, items)
-  return bot_reply('防疫便當完成登記🍱✅')
+  return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
-def bot_reply(response):
-  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
+def bot_reply(reply_token, response):
+  line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
 
 def last_order_date(restaurant):
   sql = """
