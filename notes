@@ -1,0 +1,27 @@
+- bento [date] [restaurant-name] [flavor](optional)
+- bento? [date]
+- bento? [restaurant-name]
+  -- last time date:
+  -- frequency:
+
+Quarantine Bento:
+* when was the last time you ate here? DONE
+* how many times did we eat there? DONE
+
+* what should we eat today? - randomize selection from restaurants pool
+* can you recommend something similar to this restaurant? - use some API?
+
+* what did we eat on which day during quarantine
+* how did you rate today’s meal?
+
+Table
+* bentos - id, created_at, restaurant_id, date, user_id
+* restaurants - id, created_at, name
+* users - id, created_at, name
+
+Tech needed:
+* Python - recommendation system
+
+heroku logs --tail
+heroku config:get key
+heroku config:set key=value 

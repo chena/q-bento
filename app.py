@@ -59,6 +59,8 @@ def handle_message(event):
   
   if token_count == 2:
     restaurant = tokens[1]
+    # TODO
+    # if restaurant == 'what': # what to eat
     freq = check_frequency(restaurant)
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
@@ -66,6 +68,10 @@ def handle_message(event):
   if option.lower() == 'when':
     last_time = last_order_date(restaurant).strftime("%m/%d")
     return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
+
+  if option.lower() == 'want' or option == '想吃':
+    new_restaurant(restaurant)
+    return bot_reply(reply_token, '👌🏼'{}'has been added to your 想吃清單👌🤤'.format(restaurant, last_time))
 
   user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
