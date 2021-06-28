@@ -101,9 +101,9 @@ def from_keywords(keyword):
   sql = """
     SELECT r.name, b.items FROM restaurants r
     JOIN bentos b ON b.restaurant_id = r.id
-    WHERE b.items LIKE (%%%s%%);
+    WHERE b.items LIKE %s ESCAPE '');
   """
-  return __get_all(sql, (keyword,))
+  return __get_all(sql, ('%{}%'.format(keyword),))
 
 def last_order_date(restaurant):
   sql = """
