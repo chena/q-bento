@@ -68,6 +68,7 @@ def handle_message(event):
       else: # with options
         items = tokens[3]
         new_bento(user_id, restaurant_id, date, items)
+    response = '防疫便當完成登記🍱✅'
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def check_frequency(restaurant):
