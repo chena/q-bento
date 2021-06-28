@@ -101,9 +101,9 @@ def from_keywords(keyword):
   sql = """
     SELECT r.name, b.items FROM restaurants r
     JOIN bentos b ON b.restaurant_id = r.id
-    WHERE b.items LIKE %%%s%%;
+    WHERE b.items LIKE (%%%s%%);
   """
-  return __get_all(sql, keyword)
+  return __get_all(sql, (keyword,))
 
 def last_order_date(restaurant):
   sql = """
@@ -140,11 +140,12 @@ def get_or_create_user(line_id):
     return find_user(line_id)
 
 def get_bucket_list():
-  return __get_all("""
+  sql = """
     SELECT r.name FROM restaurants r
     LEFT JOIN bentos b on b.restaurant_id = r.id
     WHERE b.id isnull;
-    """)
+    """
+  return __get_all(sql, ())
 
 def find_restaurant(name):
   return __get_first_row("SELECT id FROM restaurants WHERE name = %s;", (name,))

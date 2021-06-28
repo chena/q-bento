@@ -7,6 +7,7 @@
 Quarantine Bento:
 * when was the last time you ate here? DONE
 * how many times did we eat there? DONE
+* want to eat? DONE - from bucket list
 
 * what should we eat today? - randomize selection from restaurants pool
 * can you recommend something similar to this restaurant? - use some API?
