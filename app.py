@@ -58,18 +58,31 @@ def handle_message(event):
     elif token_count > 4:
       response = 'Invalid: please follow format "bento [restaurant] [date] [items]"'
     else:
-      restaurant, date = tokens[1:3]
+      restaurant, option = tokens[1:3]
       user_id = get_or_create_user(event.source.user_id)
       restaurant_id = get_or_create_restaurant(restaurant)
-      if date.lower() == 'today' or date == '今天':
-        date = datetime.now()
+      if option.loewr() == 'when':
+        last_time = last_order_date(restaurant).strftime("%m/%d")
+        response = 'Your most recent order from {} is on {}.'.format(restaurant, last_time)
+      if option.lower() == 'today' or option == '今天':
+        option = datetime.now()
       if token_count == 3:
-        new_bento(user_id, restaurant_id, date)
-      else: # with options
+        new_bento(user_id, restaurant_id, option)
+      else: # with items
         items = tokens[3]
-        new_bento(user_id, restaurant_id, date, items)
+        new_bento(user_id, restaurant_id, option, items)
       response = '防疫便當完成登記🍱✅'
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
+
+def last_order_date(restaurant):
+  sql = """
+    SELECT b.order_date 
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE r.name = %s
+    ORDER BY b.order_date DESC
+    LIMIT 1;
+  """
+  return __get_first_row(sql, (restaurant,))
 
 def check_frequency(restaurant):
   sql = """
