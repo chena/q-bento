@@ -48,7 +48,7 @@ def handle_message(event):
   tokens = message.split()
   token_count = len(tokens)
 
-  if (tokens[0].startswith('bento')):
+  if (tokens[0].startswith('bento') || tokens[0].startswith('便當')):
     if token_count == 1:
       response = 'Usage: "bento [restaurant] [date] [items]"'
     if token_count == 2:
@@ -68,7 +68,7 @@ def handle_message(event):
       else: # with options
         items = tokens[3]
         new_bento(user_id, restaurant_id, date, items)
-    response = '防疫便當完成登記🍱✅'
+      response = '防疫便當完成登記🍱✅'
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def check_frequency(restaurant):
