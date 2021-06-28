@@ -59,8 +59,8 @@ def handle_message(event):
   
   if token_count == 2:
     restaurant = tokens[1]
-    # TODO
-    # if restaurant == 'what': # what to eat
+    if restaurant == 'what' or '?': # what to eat
+      return bot_reply('Some options for you: {}' get_bucket_list())
     freq = check_frequency(restaurant)
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
@@ -121,6 +121,13 @@ def get_or_create_user(line_id):
     new_user(line_id)
     return find_user(line_id)
 
+def get_bucket_list():
+  return __get_all("""
+    SELECT r.name FROM restaurants r
+    LEFT JOIN bentos b on b.restaurant_id = r.id
+    WHERE b.id isnull;
+    """)
+
 def find_restaurant(name):
   return __get_first_row("SELECT id FROM restaurants WHERE name = %s;", (name,))
 
@@ -154,6 +161,10 @@ def __get_first_row(sql, param):
   res = cur.fetchone()
   if res:
     return res[0]
+
+def __get_all(sql):
+  cur.execute(sql)
+  return cur.fetchall()
 
 if __name__ == '__main__':
   app.run()
