@@ -71,7 +71,7 @@ def handle_message(event):
 
   if option.lower() == 'want' or option == '想吃':
     new_restaurant(restaurant)
-    return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant, last_time))
+    return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
 
   user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
