@@ -61,7 +61,7 @@ def handle_message(event):
       restaurant, option = tokens[1:3]
       user_id = get_or_create_user(event.source.user_id)
       restaurant_id = get_or_create_restaurant(restaurant)
-      if option.loewr() == 'when':
+      if option.lower() == 'when':
         last_time = last_order_date(restaurant).strftime("%m/%d")
         response = 'Your most recent order from {} is on {}.'.format(restaurant, last_time)
       if option.lower() == 'today' or option == '今天':
