@@ -61,6 +61,8 @@ def handle_message(event):
       restaurant, date = tokens[1:3]
       user_id = get_or_create_user(event.source.user_id)
       restaurant_id = get_or_create_restaurant(restaurant)
+      if date.lower() == 'today':
+        date = datetime.now()
       if token_count == 3:
         new_bento(user_id, restaurant_id, date)
       else: # with options
