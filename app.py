@@ -48,30 +48,36 @@ def handle_message(event):
   tokens = message.split()
   token_count = len(tokens)
 
-  if (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
-    if token_count == 1:
-      response = 'Usage: "bento [restaurant] [date] [items]"'
-    if token_count == 2:
-      restaurant = tokens[1]
-      freq = check_frequency(restaurant)
-      response = 'You ordered from {} {} times during quarantine!'.format(restaurant, freq)
-    elif token_count > 4:
-      response = 'Invalid: please follow format "bento [restaurant] [date] [items]"'
-    else:
-      restaurant, option = tokens[1:3]
-      user_id = get_or_create_user(event.source.user_id)
-      restaurant_id = get_or_create_restaurant(restaurant)
-      if option.lower() == 'when':
-        last_time = last_order_date(restaurant).strftime("%m/%d")
-        response = 'Your most recent order from {} is on {}.'.format(restaurant, last_time)
-      elif option.lower() == 'today' or option == '今天':
-        option = datetime.now()
-      elif token_count == 3:
-        new_bento(user_id, restaurant_id, option)
-      else: # with items
-        items = tokens[3]
-        new_bento(user_id, restaurant_id, option, items)
-      response = '防疫便當完成登記🍱✅'
+  if not (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
+    return bot_reply(response)
+    
+  if token_count == 1:
+    return bot_reply('Usage: "bento [restaurant] [date] [items]"')
+  if token_count > 4:
+    return bot_reply('Invalid: please follow format "bento [restaurant] [date] [items]"')
+  
+  if token_count == 2:
+    restaurant = tokens[1]
+    freq = check_frequency(restaurant)
+    return bot_reply('You ordered from {} {} times during quarantine!'.format(restaurant, freq))
+  
+  restaurant, option = tokens[1:3]
+  if option.lower() == 'when':
+    last_time = last_order_date(restaurant).strftime("%m/%d")
+    return bot_reply('Your most recent order from {} is on {}.'.format(restaurant, last_time))
+
+  user_id = get_or_create_user(event.source.user_id)
+  restaurant_id = get_or_create_restaurant(restaurant)
+  if option.lower() == 'today' or option == '今天':
+    option = datetime.now()
+  if token_count == 3:
+    new_bento(user_id, restaurant_id, option)
+  else: # with items
+    items = tokens[3]
+    new_bento(user_id, restaurant_id, option, items)
+  rreturn bot_reply('防疫便當完成登記🍱✅')
+
+def bot_reply(response):
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 def last_order_date(restaurant):
