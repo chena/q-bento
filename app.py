@@ -72,12 +72,11 @@ def handle_message(event):
     return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
   # find restaurants from keywords
   if restaurant == 'what':
-    found_restaurants = from_keywords(option)
+    found_restaurants = [r[0] for r in from_keywords(option)]
     if len(found_restaurants) > 0:
-      return bot_reply(reply_token, 'Some {} options for you: {}'.format(option ,', '.join(found_restaurants)))
+      return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
     else:
       return bot_reply(reply_token, 'Sorry, no match found 😥')
-
 
   if option.lower() == 'want' or option == '想吃':
     new_restaurant(restaurant)
