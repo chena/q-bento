@@ -66,9 +66,18 @@ def handle_message(event):
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
   restaurant, option = tokens[1:3]
+  # check last order date
   if option.lower() == 'when':
     last_time = last_order_date(restaurant).strftime("%m/%d")
     return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
+  # find restaurants from keywords
+  if restaurant == 'what':
+    found_restaurants = from_keywords(option)
+    if len(found_restaurants) > 0:
+      return bot_reply(reply_token, 'Some {} options for you: {}'.format(option ,', '.join(found_restaurants)))
+    else:
+      return bot_reply(reply_token, 'Sorry, no match found 😥')
+
 
   if option.lower() == 'want' or option == '想吃':
     new_restaurant(restaurant)
@@ -87,6 +96,14 @@ def handle_message(event):
 
 def bot_reply(reply_token, response):
   line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
+
+def from_keywords(keyword):
+  sql = """
+    SELECT r.name, b.items FROM restaurants r
+    JOIN bentos b ON b.restaurant_id = r.id
+    WHERE b.items LIKE %%%s%%;
+  """
+  return __get_all(sql, keyword)
 
 def last_order_date(restaurant):
   sql = """
@@ -163,8 +180,8 @@ def __get_first_row(sql, param):
   if res:
     return res[0]
 
-def __get_all(sql):
-  cur.execute(sql)
+def __get_all(sql, param):
+  cur.execute(sql, param)
   return cur.fetchall()
 
 if __name__ == '__main__':
