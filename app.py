@@ -48,7 +48,7 @@ def handle_message(event):
   tokens = message.split()
   token_count = len(tokens)
 
-  if (tokens[0].startswith('bento') || tokens[0].startswith('便當')):
+  if (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
     if token_count == 1:
       response = 'Usage: "bento [restaurant] [date] [items]"'
     if token_count == 2:
