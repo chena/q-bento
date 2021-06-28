@@ -64,9 +64,9 @@ def handle_message(event):
       if option.lower() == 'when':
         last_time = last_order_date(restaurant).strftime("%m/%d")
         response = 'Your most recent order from {} is on {}.'.format(restaurant, last_time)
-      if option.lower() == 'today' or option == '今天':
+      elif option.lower() == 'today' or option == '今天':
         option = datetime.now()
-      if token_count == 3:
+      elif token_count == 3:
         new_bento(user_id, restaurant_id, option)
       else: # with items
         items = tokens[3]
