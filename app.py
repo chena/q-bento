@@ -60,7 +60,8 @@ def handle_message(event):
   if token_count == 2:
     restaurant = tokens[1]
     if restaurant == 'what':
-      return bot_reply(reply_token, 'Some options for you: {}'.format(get_bucket_list()))
+      bucket_list = [r[0] for r in get_bucket_list()]
+      return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     freq = check_frequency(restaurant)
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
