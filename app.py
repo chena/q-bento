@@ -75,7 +75,7 @@ def handle_message(event):
   else: # with items
     items = tokens[3]
     new_bento(user_id, restaurant_id, option, items)
-  rreturn bot_reply('防疫便當完成登記🍱✅')
+  return bot_reply('防疫便當完成登記🍱✅')
 
 def bot_reply(response):
   line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
