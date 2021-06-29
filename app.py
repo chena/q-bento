@@ -53,9 +53,9 @@ def handle_message(event):
     return bot_reply(response)
     
   if token_count == 1:
-    return bot_reply(reply_token, 'Usage: "bento [restaurant] [date] [items]"')
+    return bot_reply(reply_token, get_usage())
   if token_count > 4:
-    return bot_reply(reply_token, 'Invalid: please follow format "bento [restaurant] [date] [items]"')
+    return bot_reply(reply_token, get_usage())
   
   if token_count == 2:
     restaurant = tokens[1]
@@ -92,6 +92,26 @@ def handle_message(event):
     items = tokens[3]
     new_bento(user_id, restaurant_id, option, items)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
+
+
+def get_usage():
+  return """Usage as follows:
+  * Get bot usage:
+    First token can be 'bento' or '便當'
+    bento how
+  * New bento entry
+    bento [restaurant] [date] [items]
+  * Check order frequency
+    bento [restaurant]
+  * Check last order date
+    bento [restaurant] when
+  * Add new restaurant to bucket list
+    bento [restaurant] want
+  * Get restaurants from bucket list
+    bento what
+  * Get restaurants from keyword
+    bento what [keyword]
+  """
 
 def bot_reply(reply_token, response):
   line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
