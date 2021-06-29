@@ -199,9 +199,6 @@ def new_restaurant(name):
     VALUES (%s, %s);
     """, (name, datetime.now()))
 
-def update_bento():
-
-
 def __insert_or_update(sql, param):
   cur.execute(sql, param)
   conn.commit()
