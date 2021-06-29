@@ -7,9 +7,12 @@
 Quarantine Bento:
 * when was the last time you ate here? DONE
 * how many times did we eat there? DONE
-* want to eat? DONE - from bucket list
+* want to eat? DONE - from bucket list DONE
 
-* what should we eat today? - randomize selection from restaurants pool
+* what should we eat today? 
+  - given some keyword "咖哩" "魚" "麵" "壽司" - pick restaurant DONE 
+  - randomize selection from restaurants pool
+* 'Yesterday' or Day of week options instead of full date (relative dates)
 * can you recommend something similar to this restaurant? - use some API?
 
 * what did we eat on which day during quarantine

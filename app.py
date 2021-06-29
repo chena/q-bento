@@ -96,20 +96,18 @@ def handle_message(event):
 
 def get_usage():
   return """Usage as follows:
-  * Get bot usage:
-    First token can be 'bento' or '便當'
-    bento how
-  * New bento entry
+  * First token can be 'bento' or '便當'
+  * New bento entry:
     bento [restaurant] [date] [items]
-  * Check order frequency
+  * Check order frequency:
     bento [restaurant]
-  * Check last order date
+  * Check last order date:
     bento [restaurant] when
-  * Add new restaurant to bucket list
+  * Add new restaurant to bucket list:
     bento [restaurant] want
-  * Get restaurants from bucket list
+  * Get restaurants from bucket list:
     bento what
-  * Get restaurants from keyword
+  * Get restaurants from keyword:
     bento what [keyword]
   """
 
