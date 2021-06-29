@@ -171,24 +171,38 @@ def find_user(line_id):
   return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
 
 def new_user(line_id, name='Alice Chen'):
-  __insert("""
+  __insert_or_update("""
     INSERT INTO users (line_id, name, created_at)
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
 def new_bento(user_id, restaurant_id, order_date, items=None):
-  __insert("""
-    INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, items) 
-    VALUES (%s, %s, %s, %s, %s);
-    """, (user_id, restaurant_id, order_date, datetime.now(), items))
+  last_order_sql = """
+    SELECT b.id 
+    FROM bentos b WHERE b.restaurant_id = %s AND b.order_date = %s
+    LIMIT 1;
+  """
+  last_order = __get_first_row(last_order_sql, (restaurant_id, order_date))
+  # update if record exists
+  if last_order:
+    __insert_or_update("UPDATE bentos SET items = %s WHERE id = %s", (items, last_order))
+  else:
+    sql = """
+      INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, items) 
+      VALUES (%s, %s, %s, %s, %s);
+    """
+    __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), items))
 
 def new_restaurant(name):
-  __insert("""
+  __insert_or_update("""
     INSERT INTO restaurants (name, created_at) 
     VALUES (%s, %s);
     """, (name, datetime.now()))
 
-def __insert(sql, param):
+def update_bento():
+
+
+def __insert_or_update(sql, param):
   cur.execute(sql, param)
   conn.commit()
 
