@@ -179,7 +179,7 @@ def new_user(line_id, name='Alice Chen'):
 def new_bento(user_id, restaurant_id, order_date, items=None):
   last_order_sql = """
     SELECT b.id 
-    FROM bentos b WHERE b.restaurant_id = %s AND b.order_date = %s
+    FROM bentos b WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s)
     LIMIT 1;
   """
   last_order = __get_first_row(last_order_sql, (restaurant_id, order_date))
