@@ -8,10 +8,12 @@ Quarantine Bento:
 * when was the last time you ate here? DONE
 * how many times did we eat there? DONE
 * want to eat? DONE - from bucket list DONE
-* overwrite record if same date
+* overwrite record if same date DONE
+* bento where ?
 
 * what should we eat today? 
-  - given some keyword "咖哩" "魚" "麵" "壽司" - pick restaurant DONE 
+  - given some keyword "咖哩" "魚" "麵" "壽司" - pick restaurant DONE
+  - allow items to be more flexible
   - randomize selection from restaurants pool
 * 'Yesterday' or Day of week options instead of full date (relative dates)
 * can you recommend something similar to this restaurant? - use some API?
@@ -30,3 +32,5 @@ Tech needed:
 heroku logs --tail
 heroku config:get key
 heroku config:set key=value 
+
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=24.9616908,121.2259396&keyword=coffee&key=AIzaSyBy10Aeul81Pf8X_5moYvtWIjP2sipmo7Y

@@ -54,9 +54,6 @@ def handle_message(event):
     
   if token_count == 1:
     return bot_reply(reply_token, get_usage())
-  if token_count > 4:
-    return bot_reply(reply_token, get_usage())
-  
   if token_count == 2:
     restaurant = tokens[1]
     if restaurant == 'what':
@@ -64,24 +61,24 @@ def handle_message(event):
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     freq = check_frequency(restaurant)
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
-  
-  restaurant, option = tokens[1:3]
+  if token_count == 3:
+    restaurant, option = tokens[1:3]
   # check last order date
-  if option.lower() == 'when':
-    last_time = last_order_date(restaurant).strftime("%m/%d")
-    return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
-  # find restaurants from keywords
-  if restaurant == 'what':
-    found_restaurants = [r[0] for r in from_keywords(option)]
-    if len(found_restaurants) > 0:
-      return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
-    else:
-      return bot_reply(reply_token, 'Sorry, no match found 😥')
+    if option.lower() == 'when':
+      last_time = last_order_date(restaurant).strftime("%m/%d")
+      return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
+    # find restaurants from keywords
+    if restaurant == 'what':
+      found_restaurants = [r[0] for r in from_keywords(option)]
+      if len(found_restaurants) > 0:
+        return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
+      else:
+        return bot_reply(reply_token, 'Sorry, no match found 😥')
+    if option.lower() == 'want' or option == '想吃':
+      new_restaurant(restaurant)
+      return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
 
-  if option.lower() == 'want' or option == '想吃':
-    new_restaurant(restaurant)
-    return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
-
+  # support more than 3 tokens
   user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
   if option.lower() == 'today' or option == '今天':
@@ -89,7 +86,7 @@ def handle_message(event):
   if token_count == 3:
     new_bento(user_id, restaurant_id, option)
   else: # with items
-    items = tokens[3]
+    items = ','.join(tokens[3:])
     new_bento(user_id, restaurant_id, option, items)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
