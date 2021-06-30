@@ -59,8 +59,12 @@ def handle_message(event):
     if restaurant == 'what':
       bucket_list = [r[0] for r in get_bucket_list()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
-    freq = check_frequency(restaurant)
-    return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
+    elif restaurant == 'total':
+      total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
+      return bot_reply(reply_token, 'You have spent ${} in total on lunch bentos during quarantine!'.format(total)) 
+    else: # check frequency
+      freq = check_frequency(restaurant)
+      return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
   
   restaurant, option = tokens[1:3]
   if token_count == 3:
@@ -120,6 +124,8 @@ def get_usage():
     bento what
   * Get restaurants from keyword:
     bento what [keyword]
+  * Get total spent on all bentos:
+    bento total
   """
 
 def bot_reply(reply_token, response):
