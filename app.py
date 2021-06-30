@@ -196,7 +196,7 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
   last_order = __get_first_row(last_order_sql, (restaurant_id, order_date))
   # update if record exists
   if last_order:
-    __insert_or_update("UPDATE bentos SET items = %s WHERE id = %s", (items, last_order))
+    __insert_or_update("UPDATE bentos SET items = %s, price = %s WHERE id = %s", (items, price, last_order))
   else:
     sql = """
       INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items) 
