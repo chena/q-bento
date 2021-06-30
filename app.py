@@ -66,8 +66,13 @@ def handle_message(event):
   if token_count == 3:
   # check last order date
     if option.lower() == 'when':
-      last_time = last_order_date(restaurant).strftime("%m/%d")
-      return bot_reply(reply_token, 'Your most recent order from {} is on {}.'.format(restaurant, last_time))
+      last_order = last_order(restaurant)
+      if last_order:
+        last_time, items, price = last_order[0]
+        return bot_reply(reply_token, 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price))
+      else:
+        return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
+
     # find restaurants from keywords
     if restaurant == 'what':
       found_restaurants = [r[0] for r in from_keywords(option)]
@@ -96,7 +101,7 @@ def get_usage():
   return """Usage as follows:
   * First token can be 'bento' or '便當'
   * New bento entry:
-    bento [restaurant] [date] [items]
+    bento [restaurant] [date] [price] [items]
   * Check order frequency:
     bento [restaurant]
   * Check last order date:
@@ -120,15 +125,15 @@ def from_keywords(keyword):
   """
   return __get_all(sql, ('%{}%'.format(keyword),))
 
-def last_order_date(restaurant):
+def last_order(restaurant):
   sql = """
-    SELECT b.order_date 
+    SELECT b.order_date, b.items, b.price 
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name = %s
     ORDER BY b.order_date DESC
     LIMIT 1;
   """
-  return __get_first_row(sql, (restaurant,))
+  return __get_all(sql, (restaurant,))
 
 def check_frequency(restaurant):
   sql = """
