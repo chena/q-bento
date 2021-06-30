@@ -61,8 +61,9 @@ def handle_message(event):
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     freq = check_frequency(restaurant)
     return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
+  
+  restaurant, option = tokens[1:3]
   if token_count == 3:
-    restaurant, option = tokens[1:3]
   # check last order date
     if option.lower() == 'when':
       last_time = last_order_date(restaurant).strftime("%m/%d")
