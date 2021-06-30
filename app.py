@@ -66,7 +66,7 @@ def handle_message(event):
   if token_count == 3:
   # check last order date
     if option.lower() == 'when':
-      last_order = last_order(restaurant)
+      last_order = check_last_order(restaurant)
       if last_order:
         last_time, items, price = last_order[0]
         return bot_reply(reply_token, 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price))
@@ -125,7 +125,7 @@ def from_keywords(keyword):
   """
   return __get_all(sql, ('%{}%'.format(keyword),))
 
-def last_order(restaurant):
+def check_last_order(restaurant):
   sql = """
     SELECT b.order_date, b.items, b.price 
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
