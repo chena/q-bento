@@ -87,13 +87,21 @@ def handle_message(event):
   # support more than 3 tokens
   user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
+  order_date = option
   if option.lower() == 'today' or option == '今天':
-    option = datetime.now()
+    order_date = datetime.now()
   if token_count == 3:
-    new_bento(user_id, restaurant_id, option)
-  else: # with items
-    items = ','.join(tokens[3:])
-    new_bento(user_id, restaurant_id, option, items)
+    new_bento(user_id, restaurant_id, order_date)
+  else: # with price and/or items
+    items = None
+    price = None
+    if tokens[3].isdigit():
+      price = int(tokens[3])
+      if token_count > 4:
+        items = ','.join(tokens[4:])
+    else:
+      items = ','.join(tokens[3:])
+    new_bento(user_id, restaurant_id, order_date, price, items)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
 
@@ -104,7 +112,7 @@ def get_usage():
     bento [restaurant] [date] [price] [items]
   * Check order frequency:
     bento [restaurant]
-  * Check last order date:
+  * Check last order:
     bento [restaurant] when
   * Add new restaurant to bucket list:
     bento [restaurant] want
@@ -179,7 +187,7 @@ def new_user(line_id, name='Alice Chen'):
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
-def new_bento(user_id, restaurant_id, order_date, items=None):
+def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
   last_order_sql = """
     SELECT b.id 
     FROM bentos b WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s)
@@ -191,10 +199,10 @@ def new_bento(user_id, restaurant_id, order_date, items=None):
     __insert_or_update("UPDATE bentos SET items = %s WHERE id = %s", (items, last_order))
   else:
     sql = """
-      INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, items) 
+      INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items) 
       VALUES (%s, %s, %s, %s, %s);
     """
-    __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), items))
+    __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items))
 
 def new_restaurant(name):
   __insert_or_update("""
