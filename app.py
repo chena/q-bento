@@ -61,7 +61,8 @@ def handle_message(event):
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     elif restaurant == 'total':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
-      return bot_reply(reply_token, 'You have spent ${} in total on lunch bentos during quarantine!'.format(total)) 
+      bento_count = get_bento_count()
+      return bot_reply(reply_token, 'You have spent ${} in total on {} lunch bentos during quarantine!'.format(total, bento_count)) 
     else: # check frequency
       freq = check_frequency(restaurant)
       return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
@@ -159,6 +160,12 @@ def check_frequency(restaurant):
     WHERE r.name = %s;
   """
   return __get_first_row(sql, (restaurant,))
+
+def get_bento_count():
+  sql = """
+    SELECT COUNT(*) FROM bentos b;
+  """
+  return __get_first_row(sql, ())
 
 def get_or_create_restaurant(name):
   found_rest = find_restaurant(name)
