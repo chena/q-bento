@@ -206,7 +206,7 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
   else:
     sql = """
       INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items) 
-      VALUES (%s, %s, %s, %s, %s);
+      VALUES (%s, %s, %s, %s, %s, %s);
     """
     __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items))
 
