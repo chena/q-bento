@@ -99,11 +99,11 @@ def handle_message(event):
   else: # with price and/or items
     items = None
     price = None
-    if tokens[3].isdigit() || token[3][0] == '$':
+    if tokens[3].isdigit() or tokens[3][0] == '$':
       try:
         price = int(tokens[3])
       except:
-        price = int(token[3][1:])
+        price = int(tokens[3][1:])
       if token_count > 4:
         items = ','.join(tokens[4:])
     else:
