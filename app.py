@@ -63,7 +63,7 @@ def handle_message(event):
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
       avg = round(total/bento_count)
-      return bot_reply(reply_token, 'You have spent ${} in total on {} lunch bentos during quarantine! (${} per day on average)'.format(total, bento_count, avg)) 
+      return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average) 💸'.format(total, bento_count, avg)) 
     else: # check frequency
       freq = check_frequency(restaurant)
       return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
