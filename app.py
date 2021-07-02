@@ -74,11 +74,11 @@ def handle_message(event):
     if second_token == 'what':
       bucket_list = [r[0] for r in get_bucket_list()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
-    elif second_token == 'pick':
+    elif second_token == 'pick' or second_token == '選':
       name, phone, link = pick_restaurant()
       reply = '🍱{}🍱 picked!'.format(name)
       if phone:
-        reply += '({})'.format(phone)
+        reply += '\nPhone: {}'.format(phone)
       if link:
         reply += '\n{}'.format(link)
       return bot_reply(reply_token, reply)
