@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from flask import Flask, request
 import psycopg2
+import phonenumbers
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -49,9 +50,17 @@ def handle_message(event):
   token_count = len(tokens)
 
   if not (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
-    if tokens[0].startswith('https://'):
-      print(event.message)
-      return bot_reply(reply_token, 'Thanks for sharing!')
+    # detect URL shared from google map with restaurant name info
+    if 'https://maps' in response and not tokens[0].startswith('https'):
+      restaurant = tokens[0]
+      phone = None
+      url = tokens[1]
+      # check if second token is a phone number or a link
+      p = phonenumbers.parse(tokens[1])
+      if phonenumbers.is_valid_number(p):
+        phone, url = tokens[1:]
+      new_restaurant(restaurant, url, phone)
+      return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list!'.format(restaurant))
     return bot_reply(reply_token, response)
     
   if token_count == 1:
@@ -223,11 +232,11 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
     """
     __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items))
 
-def new_restaurant(name):
+def new_restaurant(name, url=None, phone=None):
   __insert_or_update("""
-    INSERT INTO restaurants (name, created_at) 
-    VALUES (%s, %s);
-    """, (name, datetime.now()))
+    INSERT INTO restaurants (name, url, phone, created_at) 
+    VALUES (%s, %s, %s, %s);
+    """, (name, url, phone, datetime.now()))
 
 def __insert_or_update(sql, param):
   cur.execute(sql, param)
