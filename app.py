@@ -56,7 +56,7 @@ def handle_message(event):
       phone = None
       url = tokens[1]
       # check if second token is a phone number or a link
-      p = phonenumbers.parse(tokens[1])
+      p = phonenumbers.parse(tokens[1], 'TW')
       if phonenumbers.is_valid_number(p):
         phone, url = tokens[1:]
       new_restaurant(restaurant, url, phone)
