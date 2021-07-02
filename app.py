@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
-from flask import Flask, request, abort
-# from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request
 import psycopg2
 
 from linebot import (
@@ -50,7 +49,10 @@ def handle_message(event):
   token_count = len(tokens)
 
   if not (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
-    return bot_reply(response)
+    if tokens[0].startswith('https://'):
+      print(event.message)
+      return bot_reply(reply_token, 'Thanks for sharing!')
+    return bot_reply(reply_token, response)
     
   if token_count == 1:
     return bot_reply(reply_token, get_usage())

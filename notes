@@ -7,9 +7,13 @@ Quarantine Bento ideas:
 * include price DONE
 * accept $ in entry DONE
 * word cloud with items DONE
+* include word cloud in app.py
+* share link
 * aggregate data from different chat rooms 
-* bento where ?
 
+TODOs:
+* Readme documentation
+* bento where ?
 * what should we eat today? 
   - given some keyword "咖哩" "魚" "麵" "壽司" - pick restaurant DONE
   - allow items to be more flexible DONE
@@ -33,5 +37,7 @@ heroku config:get key
 heroku config:set key=value 
 
 Resources:
+* https://www.line-community.me/en/question/5fe0641a851f74b8353e9f32
 * https://www.psycopg.org/docs/usage.html
 * https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=24.9616908,121.2259396&keyword=coffee
+* https://medium.com/@fsflyingsoar/%E7%AD%86%E8%A8%98-for-python-jieba-wordcloud-b814f5e04e01
