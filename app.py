@@ -76,11 +76,11 @@ def handle_message(event):
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     elif second_token == 'pick' or second_token == '選':
       name, phone, link = pick_restaurant()
-      reply = '🍱{}🍱 picked!'.format(name)
+      reply = '🍱 {}'.format(name)
       if phone:
-        reply += '\nPhone: {}'.format(phone)
+        reply += '\n☎️ {}'.format(phone)
       if link:
-        reply += '\n{}'.format(link)
+        reply += '\n🔗 {}'.format(link)
       return bot_reply(reply_token, reply)
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
