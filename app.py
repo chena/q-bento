@@ -55,11 +55,14 @@ def handle_message(event):
       lines = message.split('\n')
       restaurant = lines[0]
       phone = None
-      url = tokens[1]
+      url = None
       # check if second line is a phone number or a link
       p = phonenumbers.parse(lines[1], 'TW')
       if phonenumbers.is_valid_number(p):
         phone, url = lines[1:]
+        print(lines[1:])
+      else:
+        url = lines[1]
       new_restaurant(restaurant, url, phone)
       return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list!'.format(restaurant))
     return bot_reply(reply_token, response)
