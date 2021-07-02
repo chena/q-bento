@@ -52,13 +52,14 @@ def handle_message(event):
   if not (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
     # detect URL shared from google map with restaurant name info
     if 'https://maps' in response and not tokens[0].startswith('https'):
-      restaurant = tokens[0]
+      lines = message.split('\n')
+      restaurant = lines[0]
       phone = None
       url = tokens[1]
-      # check if second token is a phone number or a link
-      p = phonenumbers.parse(tokens[1], 'TW')
+      # check if second line is a phone number or a link
+      p = phonenumbers.parse(lines[1], 'TW')
       if phonenumbers.is_valid_number(p):
-        phone, url = tokens[1:]
+        phone, url = lines[1:]
       new_restaurant(restaurant, url, phone)
       return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list!'.format(restaurant))
     return bot_reply(reply_token, response)
