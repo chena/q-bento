@@ -1,8 +1,3 @@
-- bento [date] [restaurant-name] [flavor](optional)
-- bento? [date]
-- bento? [restaurant-name]
-  -- last time date:
-  -- frequency:
 
 Quarantine Bento ideas:
 * when was the last time you ate here? DONE
@@ -10,8 +5,9 @@ Quarantine Bento ideas:
 * want to eat? DONE - from bucket list DONE
 * overwrite record if same date DONE
 * include price DONE
-* accept $ in entry
-* word cloud with items
+* accept $ in entry DONE
+* word cloud with items DONE
+* aggregate data from different chat rooms 
 * bento where ?
 
 * what should we eat today? 
@@ -25,7 +21,7 @@ Quarantine Bento ideas:
 * how did you rate today’s meal?
 
 Table
-* bentos - id, created_at, restaurant_id, date, user_id
+* bentos - id, created_at, restaurant_id, date, user_id, chatroom_id
 * restaurants - id, created_at, name
 * users - id, created_at, name
 
@@ -36,4 +32,6 @@ heroku logs --tail
 heroku config:get key
 heroku config:set key=value 
 
-https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=24.9616908,121.2259396&keyword=coffee
+Resources:
+* https://www.psycopg.org/docs/usage.html
+* https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=24.9616908,121.2259396&keyword=coffee
