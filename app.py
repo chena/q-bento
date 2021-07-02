@@ -158,7 +158,7 @@ def bot_reply(reply_token, response):
 
 def pick_restaurant():
   restaurants = get_bucket_list()
-  index = random.randint(len(restaurants))
+  index = random.randint(0, len(restaurants))
   # TODO if len is zero then get restaurants from all
   return restaurants[index]
 
