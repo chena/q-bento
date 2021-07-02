@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Flask, request
 import psycopg2
 import phonenumbers
+import random
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -60,28 +61,30 @@ def handle_message(event):
       p = phonenumbers.parse(lines[1], 'TW')
       if phonenumbers.is_valid_number(p):
         phone, url = lines[1:]
-        print(lines[1:])
       else:
         url = lines[1]
       new_restaurant(restaurant, url, phone)
-      return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list!'.format(restaurant))
+      return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list 😋'.format(restaurant))
     return bot_reply(reply_token, response)
     
   if token_count == 1:
     return bot_reply(reply_token, get_usage())
   if token_count == 2:
-    restaurant = tokens[1]
-    if restaurant == 'what':
+    second_token = tokens[1]
+    if second_token == 'what':
       bucket_list = [r[0] for r in get_bucket_list()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
-    elif restaurant == 'total' or restaurant == '合計':
+    elif second_token == 'pick':
+      name, phone, link = pick_restaurant()
+      return bot_reply(reply_token, '🍱{}🍱\n{}\n{}'.format(name, '' if not phone else phone, link))
+    elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
       avg = round(total/bento_count)
-      return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average) 💸'.format(total, bento_count, avg)) 
+      return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average)🤑'.format(total, bento_count, avg)) 
     else: # check frequency
-      freq = check_frequency(restaurant)
-      return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(restaurant, freq))
+      freq = check_frequency(second_token)
+      return bot_reply(reply_token, 'You ordered from {} {} times during quarantine!'.format(second_token, freq))
   
   restaurant, option = tokens[1:3]
   if token_count == 3:
@@ -146,10 +149,18 @@ def get_usage():
     bento what [keyword]
   * Get total spent on all bentos:
     bento total
+  * Pick one restaurant from bucket list:
+    bento pick
   """
 
 def bot_reply(reply_token, response):
   line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
+
+def pick_restaurant():
+  restaurants = get_bucket_list()
+  index = random.randint(len(restaurants))
+  # TODO if len is zero then get restaurants from all
+  return restaurants[index]
 
 def from_keywords(keyword):
   sql = """
@@ -201,7 +212,7 @@ def get_or_create_user(line_id):
 
 def get_bucket_list():
   sql = """
-    SELECT r.name FROM restaurants r
+    SELECT r.name, r.phone, r.url FROM restaurants r
     LEFT JOIN bentos b on b.restaurant_id = r.id
     WHERE b.id isnull;
     """
