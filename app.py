@@ -76,13 +76,15 @@ def handle_message(event):
       bucket_list = [r[0] for r in get_bucket_list()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     elif second_token == 'pick' or second_token == '選':
-      name, phone, link = pick_restaurant()
+      name, phone, link, tabetai = pick_restaurant()
       reply = '🍱 {}'.format(name)
       if phone:
         reply += '\n☎️ {}'.format(phone)
       if link:
         reply += '\n🔗 {}'.format(link)
-      return bot_reply(reply_token, reply)
+      if tabetai:
+        reply += '\n👍 {}'.format(tabetai)
+    return bot_reply(reply_token, reply)
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
@@ -218,7 +220,7 @@ def get_or_create_user(line_id):
 
 def get_bucket_list():
   sql = """
-    SELECT r.name, r.phone, r.url FROM restaurants r
+    SELECT r.name, r.phone, r.url, r.tabetai FROM restaurants r
     LEFT JOIN bentos b on b.restaurant_id = r.id
     WHERE b.id isnull;
     """
