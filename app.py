@@ -84,7 +84,7 @@ def handle_message(event):
         reply += '\n🔗 {}'.format(link)
       if tabetai:
         reply += '\n👍 {}'.format(tabetai)
-    return bot_reply(reply_token, reply)
+      return bot_reply(reply_token, reply)
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
