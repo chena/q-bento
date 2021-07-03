@@ -44,13 +44,14 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-  message = event.message.text.lower()
+  message = event.message.text
   reply_token = event.reply_token
   response = message
   tokens = message.split()
   token_count = len(tokens)
+  first_token = tokens[0].lower()
 
-  if not (tokens[0].startswith('bento') or tokens[0].startswith('便當')):
+  if not (first_token.startswith('bento') or first_token.startswith('便當')):
     # detect URL shared from google map with restaurant name info
     if 'https://maps' in response and not tokens[0].startswith('https'):
       lines = message.split('\n')
