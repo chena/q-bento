@@ -51,7 +51,7 @@ def handle_message(event):
   token_count = len(tokens)
   first_token = tokens[0].lower()
   source = event.source
-  room_id = source.room_id if source.type == 'room'
+  room_id = source.room_id if source.type == 'room' else None
   user_id = get_or_create_user(source.user_id)
   print('ROOM: ', room_id)
 
