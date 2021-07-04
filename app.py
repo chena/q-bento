@@ -50,7 +50,10 @@ def handle_message(event):
   tokens = message.split()
   token_count = len(tokens)
   first_token = tokens[0].lower()
-  print('Event: ', event)
+  source = event.source
+  room_id = source.room_id if source.type == 'room'
+  user_id = get_or_create_user(source.user_id)
+  print('ROOM: ', room_id)
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
     # detect URL shared from google map with restaurant name info
@@ -118,7 +121,6 @@ def handle_message(event):
       return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
 
   # support more than 3 tokens
-  user_id = get_or_create_user(event.source.user_id)
   restaurant_id = get_or_create_restaurant(restaurant)
   order_date = option
   if option.lower() == 'today' or option == '今天':
