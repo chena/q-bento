@@ -118,6 +118,7 @@ def handle_message(event):
 
   # support more than 3 tokens
   user_id = get_or_create_user(event.source.user_id)
+  print('GROUP: ', event.source.group_id)
   restaurant_id = get_or_create_restaurant(restaurant)
   order_date = option
   if option.lower() == 'today' or option == '今天':
