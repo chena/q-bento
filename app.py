@@ -50,7 +50,7 @@ def handle_message(event):
   tokens = message.split()
   token_count = len(tokens)
   first_token = tokens[0].lower()
-  print('Source: ', event.source)
+  print('Event: ', event)
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
     # detect URL shared from google map with restaurant name info
