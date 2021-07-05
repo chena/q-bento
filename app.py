@@ -51,9 +51,11 @@ def callback():
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
   message = event.message
-  r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
+  reply_token = event.reply_token
+  image_url = 'https://api-data.line.me/v2/bot/message/{}/content'.format(message.id)
+  # r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
   #json.loads(r.text)
-  print('IMAGE content response: ' + r.text)
+  print('IMAGE url: ' + image_url)
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
 @handler.add(MessageEvent, message=TextMessage)
