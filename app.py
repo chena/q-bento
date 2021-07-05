@@ -52,7 +52,11 @@ def callback():
 def get_image(bento_id):
   if bento_id == 'last':
     bento_id = get_last_bento()
-    content = get_bento_image(bento_id)
+    image_binary = get_bento_image(bento_id)
+    return send_file(
+      io.BytesIO(image_binary),
+      mimetype='image/jpeg',
+      as_attachment=True)
   return 'OK'
 
 @handler.add(MessageEvent, message=ImageMessage)
@@ -64,8 +68,6 @@ def handle_image(event):
   content = r.text
   # persist binary data
   bento_id = get_last_bento()
-  print('BENTO ID: ', bento_id)
-  print('RESPONSE: ', r)
   __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (memoryview(r.content), bento_id))
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
