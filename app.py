@@ -48,6 +48,10 @@ def callback():
     print('Invalid signature. Please check your channel access token/secret.')
   return 'OK'
 
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_image(event):
+  print('IMAGE event: ' + event)
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
   message = event.message.text
@@ -60,7 +64,6 @@ def handle_message(event):
   room_id = source.room_id if source.type == 'room' else None
   # TODO: get or create room, associate user to room
   user_id = get_or_create_user(source.user_id)
-  print('IMAGE event: ' + event)
 
   if event.message.type == 'image':
     r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
