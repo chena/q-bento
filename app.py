@@ -140,8 +140,10 @@ def handle_message(event):
           return bot_reply(reply_token, reply_msg)
         image_url = '{}images/{}'.format(APP_URL, bento_id)
         print('IMAGE URL: ', image_url)
-        bot_reply(reply_token, reply_msg)
-        return line_bot_api.reply_message(reply_token, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
+        return line_bot_api.reply_message(reply_token, [
+          TextSendMessage(text=reply_msg),
+          ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
+        ])
       else:
         return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
 
