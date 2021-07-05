@@ -264,7 +264,7 @@ def find_user(line_id):
 def get_last_bento():
   last_order_sql = """
     SELECT b.id 
-    FROM bentos b WHERE ORDER BY b.order_date DESC
+    FROM bentos b ORDER BY b.order_date DESC
     LIMIT 1;
   """
   return __get_first_row(last_order_sql, ())
