@@ -54,7 +54,7 @@ def get_image(bento_id):
     bento_id = get_last_bento()
     image_binary = get_bento_image(bento_id)
     return send_file(
-      image_binary,
+      bytes(image_binary),
       mimetype='image/jpeg',
       as_attachment=False)
   return 'OK'
