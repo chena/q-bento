@@ -50,7 +50,11 @@ def callback():
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
-  print('IMAGE event: ', event.message)
+  message = event.message
+  r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
+  #json.loads(r.text)
+  print('IMAGE content response: ' + r.text)
+  return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -64,12 +68,6 @@ def handle_message(event):
   room_id = source.room_id if source.type == 'room' else None
   # TODO: get or create room, associate user to room
   user_id = get_or_create_user(source.user_id)
-
-  if event.message.type == 'image':
-    r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
-    #json.loads(r.text)
-    print('IMAGE content response: ' + r.text)
-    return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
     # detect URL shared from google map with restaurant name info
