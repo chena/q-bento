@@ -4,6 +4,7 @@ from flask import Flask, request
 import psycopg2
 import phonenumbers
 import random
+import requests
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -18,13 +19,18 @@ from linebot.models import (
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
+TOKEN = os.environ['CHANNE_ACCESS_TOKEN']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['CHANNE_ACCESS_TOKEN'])
-handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
+handler = WebhookHandler(TOKEN)
+headers = {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer " + TOKEN
+};
 
 @app.route('/callback', methods=['POST'])
 def callback():
@@ -52,8 +58,15 @@ def handle_message(event):
   first_token = tokens[0].lower()
   source = event.source
   room_id = source.room_id if source.type == 'room' else None
+  # TODO: get or create room, associate user to room
   user_id = get_or_create_user(source.user_id)
-  print('ROOM: ', room_id)
+
+  if message.type == 'image':
+    # curl -v -X GET https://api-data.line.me/v2/bot/message/{messageId}/content
+    r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
+    #json.loads(r.text)
+    print('IMAGE content response: ' + r.text)
+    return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
     # detect URL shared from google map with restaurant name info
@@ -235,7 +248,7 @@ def find_restaurant(name):
 def find_user(line_id):
   return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
 
-def new_user(line_id, name='Alice Chen'):
+def new_user(line_id, name=None):
   __insert_or_update("""
     INSERT INTO users (line_id, name, created_at)
     VALUES (%s, %s, %s);
