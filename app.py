@@ -50,7 +50,7 @@ def callback():
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
-  print('IMAGE event: ' + event)
+  print('IMAGE event: ', event.message)
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
