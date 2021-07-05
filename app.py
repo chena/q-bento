@@ -56,7 +56,7 @@ def get_image(bento_id):
     return send_file(
       image_binary,
       mimetype='image/jpeg',
-      as_attachment=True)
+      as_attachment=False)
   return 'OK'
 
 @handler.add(MessageEvent, message=ImageMessage)
