@@ -48,14 +48,24 @@ def callback():
     print('Invalid signature. Please check your channel access token/secret.')
   return 'OK'
 
+@app.route('/images/<bento_id>')
+def get_image(bento_id):
+  if bento_id == 'last':
+    bento_id = get_last_bento()
+    content = get_bento_image(bento_id)
+  return 'OK'
+
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
   message = event.message
   reply_token = event.reply_token
   image_url = 'https://api-data.line.me/v2/bot/message/{}/content'.format(message.id)
-  # r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
-  #json.loads(r.text)
-  print('IMAGE url: ' + image_url)
+  r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
+  content = r.text
+  # persist binary data
+  bento_id = get_last_bento()
+  print('BENTO ID: ', bento_id)
+  __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (r.text, bento_id))
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -250,6 +260,19 @@ def find_restaurant(name):
 
 def find_user(line_id):
   return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
+
+def get_last_bento():
+  last_order_sql = """
+    SELECT b.id 
+    FROM bentos b WHERE ORDER BY b.order_date DESC
+    LIMIT 1;
+  """
+  return __get_first_row(last_order_sql, ())
+
+def get_bento_image(bento_id):
+  return __get_first_row("""
+    SELECT image FROM bentos WHERE id = %s
+  """, (bento_id))
 
 def new_user(line_id, name=None):
   __insert_or_update("""
