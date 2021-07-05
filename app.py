@@ -65,7 +65,7 @@ def handle_image(event):
   # persist binary data
   bento_id = get_last_bento()
   print('BENTO ID: ', bento_id)
-  __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (buffer(r.text), bento_id))
+  __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (memoryview(r.text), bento_id))
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
 @handler.add(MessageEvent, message=TextMessage)
