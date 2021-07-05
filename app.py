@@ -16,10 +16,11 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
+APP_URL = os.environ['APP_URL']
 TOKEN = os.environ['CHANNE_ACCESS_TOKEN']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
@@ -53,12 +54,11 @@ def callback():
 def get_image(bento_id):
   if bento_id == 'last':
     bento_id = get_last_bento()
-    image_binary = get_bento_image(bento_id)
-    return send_file(
-      io.BytesIO(image_binary),
-      mimetype='image/jpeg',
-      as_attachment=False)
-  return 'OK'
+  image_binary = get_bento_image(bento_id)
+  return send_file(
+    io.BytesIO(image_binary),
+    mimetype='image/jpeg',
+    as_attachment=False)
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
@@ -134,8 +134,14 @@ def handle_message(event):
     if option.lower() == 'when':
       last_order = check_last_order(restaurant)
       if last_order:
-        last_time, items, price = last_order[0]
-        return bot_reply(reply_token, 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price))
+        last_time, items, price, bento_id, bento_image = last_order[0]
+        reply_msg = 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price)
+        if not bento_image:
+          return bot_reply(reply_token, reply_msg)
+        image_url = '{}images/{}'.format(APP_URL, bento_id)
+        print('IMAGE URL: ', image_url)
+        bot_reply(reply_token, reply_msg)
+        return line_bot_api.reply_message(reply_token, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
       else:
         return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
 
@@ -213,7 +219,7 @@ def from_keywords(keyword):
 
 def check_last_order(restaurant):
   sql = """
-    SELECT b.order_date, b.items, b.price 
+    SELECT b.order_date, b.items, b.price, b.id, b.image
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name = %s
     ORDER BY b.order_date DESC
