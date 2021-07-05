@@ -1,5 +1,4 @@
 import os
-import io
 from datetime import datetime
 from flask import Flask, request, send_file
 import psycopg2
@@ -55,7 +54,7 @@ def get_image(bento_id):
     bento_id = get_last_bento()
     image_binary = get_bento_image(bento_id)
     return send_file(
-      io.BytesIO(image_binary),
+      image_binary,
       mimetype='image/jpeg',
       as_attachment=True)
   return 'OK'
