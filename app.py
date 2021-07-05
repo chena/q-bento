@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, send_file
 import psycopg2
 import phonenumbers
 import random
@@ -53,7 +53,7 @@ def get_image(bento_id):
   if bento_id == 'last':
     bento_id = get_last_bento()
     image_binary = get_bento_image(bento_id)
-    return flask.send_file(
+    return send_file(
       io.BytesIO(image_binary),
       mimetype='image/jpeg',
       as_attachment=True)
