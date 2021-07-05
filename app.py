@@ -52,7 +52,7 @@ def callback():
 def get_image(bento_id):
   if bento_id == 'last':
     bento_id = get_last_bento()
-    image_binary = get_bento_image(str(bento_id))
+    image_binary = get_bento_image(bento_id)
     return send_file(
       io.BytesIO(image_binary),
       mimetype='image/jpeg',
@@ -275,7 +275,7 @@ def get_last_bento():
 def get_bento_image(bento_id):
   return __get_first_row("""
     SELECT image FROM bentos WHERE id = %s
-  """, (bento_id))
+  """, (str(bento_id),))
 
 def new_user(line_id, name=None):
   __insert_or_update("""
