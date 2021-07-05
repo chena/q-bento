@@ -61,7 +61,7 @@ def handle_message(event):
   # TODO: get or create room, associate user to room
   user_id = get_or_create_user(source.user_id)
 
-  if message.type == 'image':
+  if event.message.type == 'image':
     r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
     #json.loads(r.text)
     print('IMAGE event: ' + event)
