@@ -25,8 +25,8 @@ cur = conn.cursor()
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi(os.environ['CHANNE_ACCESS_TOKEN'])
-handler = WebhookHandler(TOKEN)
+line_bot_api = LineBotApi(TOKEN)
+handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 headers = {
   "Content-Type": "application/json",
   "Authorization": "Bearer " + TOKEN
@@ -62,9 +62,9 @@ def handle_message(event):
   user_id = get_or_create_user(source.user_id)
 
   if message.type == 'image':
-    # curl -v -X GET https://api-data.line.me/v2/bot/message/{messageId}/content
     r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
     #json.loads(r.text)
+    print('IMAGE event: ' + event)
     print('IMAGE content response: ' + r.text)
     return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
