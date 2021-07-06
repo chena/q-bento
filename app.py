@@ -50,7 +50,7 @@ def callback():
     print('Invalid signature. Please check your channel access token/secret.')
   return 'OK'
 
-@app.route('images/<bento_id>', methods['POST'])
+@app.route('images/<bento_id>', methods=['POST'])
 def add_image(bento_id, request):
   # TODOD parse binary data, convert to base64?
   binary_data = request.body
