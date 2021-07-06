@@ -53,9 +53,9 @@ def callback():
 @app.route('/images/<bento_id>', methods=['POST', 'GET'])
 def get_or_save_image(bento_id):
   if request.method == 'POST':
-    print('REQUEST', request.data)
-    image_url = request.get_json(force=True).url 
-    binary_data = requests.get(image_url, stream=True).content
+    body = request.get_json(force=True)
+    print('REQUEST BODY', body)
+    binary_data = requests.get(body['url'], stream=True).content
     __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
     return 'OK'
   if bento_id == 'last':
