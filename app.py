@@ -54,7 +54,6 @@ def callback():
 def get_or_save_image(bento_id):
   if request.method == 'POST':
     body = request.get_json(force=True)
-    print('REQUEST BODY', body)
     binary_data = requests.get(body['url'], stream=True).content
     __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
     return 'OK'
@@ -145,7 +144,6 @@ def handle_message(event):
         if not bento_image:
           return bot_reply(reply_token, reply_msg)
         image_url = '{}images/{}'.format(APP_URL, bento_id)
-        print('IMAGE URL: ', image_url)
         return line_bot_api.reply_message(reply_token, [
           TextSendMessage(text=reply_msg),
           ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
@@ -160,9 +158,18 @@ def handle_message(event):
         return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
       else:
         return bot_reply(reply_token, 'Sorry, no match found 😥')
+    # add restaurant to list
     if option.lower() == 'want' or option == '想吃':
       new_restaurant(restaurant)
       return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
+    # add image to bento
+    if option.startswith('https:'):
+      binary_data = requests.get(option, stream=True).content
+      if binary_data:
+        last_order = check_last_order(restaurant)
+        bento_id = last_order[0][3]
+        __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
+        return bot_reply(reply_token, 'Bento image from {} uploaded! 📸'.format(restaurant))
 
   # support more than 3 tokens
   restaurant_id = get_or_create_restaurant(restaurant)
