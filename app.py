@@ -87,7 +87,6 @@ def handle_message(event):
   first_token = tokens[0].lower()
   source = event.source
   room_id = source.room_id if source.type == 'room' else None
-  # TODO: get or create room, associate user to room
   user_id = get_or_create_user(source.user_id)
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
@@ -177,7 +176,7 @@ def handle_message(event):
   if option.lower() == 'today' or option == '今天':
     order_date = datetime.now()
   if token_count == 3:
-    new_bento(user_id, restaurant_id, order_date)
+    new_bento(user_id, restaurant_id, order_date, room_id)
   else: # with price and/or items
     items = None
     price = None
@@ -190,7 +189,7 @@ def handle_message(event):
         items = ','.join(tokens[4:])
     else:
       items = ','.join(tokens[3:])
-    new_bento(user_id, restaurant_id, order_date, price, items)
+    new_bento(user_id, restaurant_id, order_date, price, items, room_id)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
 
@@ -305,7 +304,7 @@ def new_user(line_id, name=None):
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
-def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
+def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_id):
   last_order_sql = """
     SELECT b.id 
     FROM bentos b WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s)
@@ -317,8 +316,8 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None):
     __insert_or_update("UPDATE bentos SET items = %s, price = %s WHERE id = %s", (items, price, last_order))
   else:
     sql = """
-      INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items) 
-      VALUES (%s, %s, %s, %s, %s, %s);
+      INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id) 
+      VALUES (%s, %s, %s, %s, %s, %s, %s);
     """
     __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items))
 
