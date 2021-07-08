@@ -241,7 +241,7 @@ def check_last_order(restaurant):
   """
   return __get_all(sql, (restaurant,))
 
-def check_frequency(restaurant):
+def check_frequency(restaurant, room_id=None):
   sql = """
     SELECT COUNT(*) FROM bentos b
     JOIN restaurants r ON b.restaurant_id = r.id
@@ -304,7 +304,7 @@ def new_user(line_id, name=None):
     VALUES (%s, %s, %s);
     """, (line_id, name, datetime.now()))
 
-def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_id):
+def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_id=None):
   last_order_sql = """
     SELECT b.id 
     FROM bentos b WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s)
