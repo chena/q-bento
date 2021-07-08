@@ -319,7 +319,7 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_i
       INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id) 
       VALUES (%s, %s, %s, %s, %s, %s, %s);
     """
-    __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items))
+    __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id))
 
 def new_restaurant(name, url=None, phone=None):
   __insert_or_update("""
