@@ -227,7 +227,7 @@ def from_keywords(keyword):
   sql = """
     SELECT DISTINCT(r.name) FROM restaurants r
     JOIN bentos b ON b.restaurant_id = r.id
-    WHERE b.items LIKE %s ESCAPE '';
+    WHERE r.name LIKE %s ESCAPE '' OR b.items LIKE %s ESCAPE '' OR r.tabetai LIKE %s ESCAPE '';
   """
   return __get_all(sql, ('%{}%'.format(keyword),))
 
