@@ -229,7 +229,8 @@ def from_keywords(keyword):
     JOIN bentos b ON b.restaurant_id = r.id
     WHERE r.name LIKE %s ESCAPE '' OR b.items LIKE %s ESCAPE '' OR r.tabetai LIKE %s ESCAPE '';
   """
-  return __get_all(sql, ('%{}%'.format(keyword),))
+  keyword = '%{}%'.format(keyword)
+  return __get_all(sql, (keyword, keyword, keyword))
 
 def check_last_order(restaurant):
   sql = """

@@ -11,9 +11,8 @@ Quarantine Bento ideas:
 * pick random restaurant from bucket list DONE
 * support bento image DONE
 * support add image from URL bento [rest] image url DONE
-* aggregate data from different chat rooms - bento when, bento freq, bento total
 * refactoring
-* include word cloud in app.py
+* aggregate data from different chat rooms - bento when, bento freq, bento total
 
 TODOs:
 * Readme documentation
