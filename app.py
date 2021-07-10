@@ -132,8 +132,8 @@ def handle_message(event):
       counts = check_frequency(second_token)
       freq = len(counts)
       total = sum([r[0] for r in counts])
-      return bot_reply(reply_token, 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, (freq, 's' if freq else ''), total))
-  
+      return bot_reply(reply_token, 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, ('s' if freq else ''), total))
+
   restaurant, option = tokens[1:3]
   if token_count == 3:
   # check last order date
