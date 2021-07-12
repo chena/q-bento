@@ -139,6 +139,8 @@ def handle_message(event):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
         # image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
         image_messages = ImagemapSendMessage(
+          base_url='',
+          alt_text='bento',
           base_size=BaseSize(height=240, width=640),
           actions=[
               URIImagemapAction(
