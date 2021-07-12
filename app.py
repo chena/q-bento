@@ -16,7 +16,7 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage, MessageAction
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -129,39 +129,23 @@ def handle_message(event):
       avg = round(total/bento_count)
       return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average)🤑'.format(total, bento_count, avg)) 
     else: # check frequency
-      counts = check_frequency(second_token)
-      freq = len(counts)
-      total = sum([r[1] for r in counts])
-      image_ids = list(filter(None, [r[0] if r[2] else None for r in counts]))
+      bentos = get_bentos(second_token)
+      freq = len(bentos)
+      total = sum([r[1] for r in bentos])
+      bento_cards = list(filter(None, [r if r[2] else None for r in bentos]))
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(image_ids):
-        urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
+        columns = map(lambda b: CarouselColumn(
+          thumbnail_image_url='{}images/{}'.format(APP_URL, b[2]),
+          title=b[3].strftime("%m/%d"),
+          text='' if not b[4] else b[4],
+          actions=[URIAction(label='Order Again', uri=b[5])]
+        ), bento_cards)
         image_messages = TemplateSendMessage(
           alt_text='bento',
-          template=CarouselTemplate(
-          columns=[
-            CarouselColumn(
-                thumbnail_image_url=urls[0],
-                title='pic1',
-                text='description1',
-                 actions=[
-                  MessageAction(
-                    label='Bento1',
-                    text='Bento1'
-                )]
-            ),
-            CarouselColumn(
-                thumbnail_image_url=urls[1],
-                title='pic2',
-                text='description2',
-                actions=[
-                  MessageAction(
-                    label='Bento2',
-                    text='Bento2'
-                )]
-            )
-          ]))
+          template=CarouselTemplate(columns=list(columns))
+        )
         # messages += image_messages
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
@@ -277,9 +261,9 @@ def check_last_order(restaurant):
   """
   return __get_all(sql, (restaurant,))
 
-def check_frequency(restaurant, room_id=None):
+def get_bentos(restaurant, room_id=None):
   sql = """
-    SELECT b.id, b.price, b.image FROM bentos b
+    SELECT b.id, b.price, b.image, b.order_date, b.items, r.url FROM bentos b
     JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name = %s;
   """
