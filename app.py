@@ -131,8 +131,14 @@ def handle_message(event):
     else: # check frequency
       counts = check_frequency(second_token)
       freq = len(counts)
-      total = sum([r[0] for r in counts])
-      return bot_reply(reply_token, 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq else ''), total))
+      total = sum([r[1] for r in counts])
+      image_ids = filter(None, [r[0] for r in counts if r[2] else None])
+      messages = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
+      if len(image_ids):
+        urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
+        image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
+        messages += image_messages
+      return bot_reply(reply_token, messages)
 
   restaurant, option = tokens[1:3]
   if token_count == 3:
@@ -247,7 +253,7 @@ def check_last_order(restaurant):
 
 def check_frequency(restaurant, room_id=None):
   sql = """
-    SELECT b.price FROM bentos b
+    SELECT b.id, b.price, b.image FROM bentos b
     JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name = %s;
   """
