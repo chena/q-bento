@@ -133,7 +133,8 @@ def handle_message(event):
       freq = len(counts)
       total = sum([r[1] for r in counts])
       image_ids = list(filter(None, [r[0] if r[2] else None for r in counts]))
-      messages = [TextSendMessage('You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total))]
+      messae = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
+      messages = [TextSendMessage(text=messae)]
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
         image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
