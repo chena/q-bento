@@ -137,7 +137,7 @@ def handle_message(event):
       messages = [TextSendMessage(text=reply_msg)]
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
-        image_messages = [TemplateSendMessage(
+        image_messages = TemplateSendMessage(
           alt_text='bento',
           template=CarouselTemplate(
           columns=[
@@ -152,7 +152,6 @@ def handle_message(event):
                 text='description2',
             )
           ]))
-        ]
         # messages += image_messages
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
