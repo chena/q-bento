@@ -16,7 +16,7 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, ImagemapSendMessage
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, ImagemapSendMessage, BaseSize, URIImagemapAction, MessageImagemapAction
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
