@@ -155,7 +155,8 @@ def handle_message(event):
               )
           ]
         )
-        messages += image_messages
+        # messages += image_messages
+        messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
 
   restaurant, option = tokens[1:3]
