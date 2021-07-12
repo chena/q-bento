@@ -1,0 +1,12 @@
+items = " ".join(["檸檬魚","綠咖喱飯", "油飯","米粉", "壽司", "鯖魚便當","匈牙利雞腿飯","杏鮑菇牛肉飯","素食便當", "小排","紅燒魚", "櫻花蝦炒飯","松露炒飯", "炙燒鮭魚丼", "油雞便當", "青發炒飯","蔥油餅","牛肉捲餅","燙青菜","小米粥", "綠咖哩雞肉飯","嫩煎里肌肉飯", "匈牙利雞","照燒鮭魚", "香菇雞飯","鯖魚飯", "糖醋里肌飯","野菜雞肉烏龍麵", "洋蔥蘋果雞腿飯","照燒鮭魚飯", "三杯雞腿飯","香煎白帶魚飯", "蒜泥白肉飯","紅燒赤鯮魚", "雞肉咖哩飯","厚切豬排咖哩飯","麻花肉桂捲", "樹子蒸魚鱈","什錦蔬食炒飯", "炙燒鮭魚丼","鯖魚丼", "小排","紅燒魚", "嫩雞肉咖哩","慢燉豬軟骨咖哩", "小排","紅燒魚", "樹子蒸魚鱈","櫻花鮭魚炒飯", "壽司","沙拉卷", "蔬菜咖哩","素雞咖哩", "小排","紅燒魚", "雞咖哩","紅燒牛肉咖哩", "油飯","米粉","蘿蔔糕", "鱈魚便當","飯糰", "小排","紅燒魚"])
+
+
+WordCloud(background_color="white", max_words=5000, contour_width=3, contour_color="steelblue").generate_from_text(" ".join([r for r in open("mobydick.txt", "r").read().split() if r not in set(nltk.corpus.stopwords.words("english"))])).to_file("wordcloud.png")
+
+{"message": {"id": "14336204336267", "text": "bento pick", "type": "text"}, "mode": "active", "replyToken": "bc90e8d9c1e54baaada21aca62f6d9dd", "source": {"type": "user", "userId": "U191a061c9280429c5f082c0b6805f4df"}, "timestamp": 1625402465429, "type": "message"}
+
+{"message": {"id": "14336256876295", "text": "bento pick", "type": "text"}, "mode": "active", "replyToken": "d64ab8dd0dd842349fbedff6ed7bd79d", "source": {"roomId": "R1f64b3ffdbff564f672da16adb596176", "type": "room", "userId": "U191a061c9280429c5f082c0b6805f4df"}, "timestamp": 1625403088574, "type": "message"}
+
+{
+    "richMenuId": "richmenu-8b7c3ba684599a136c0add5e7e497ba7"
+}

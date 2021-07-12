@@ -13,6 +13,7 @@ Quarantine Bento ideas:
 * support add image from URL bento [rest] image url DONE
 * refactoring
 * aggregate data from different chat rooms - bento when, bento freq, bento total
+* take coffee/dessert as well?
 
 TODOs:
 * Readme documentation
@@ -47,3 +48,7 @@ Resources:
 * https://medium.com/@fsflyingsoar/%E7%AD%86%E8%A8%98-for-python-jieba-wordcloud-b814f5e04e01
 
 curl -X POST 'https://q-bento.herokuapp.com/images/42' -H "Content-Type: application/json" -d '{"url":"https://ocard.co:555/brand/8ae5751416ae7f733c1d142c2b41ffac_m.jpg"}'
+
+{
+    "richMenuId": "richmenu-8b7c3ba684599a136c0add5e7e497ba7"
+}

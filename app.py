@@ -137,7 +137,24 @@ def handle_message(event):
       messages = [TextSendMessage(text=reply_msg)]
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
-        image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
+        # image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
+        image_messages = ImagemapSendMessage(
+          base_size=BaseSize(height=240, width=640),
+          actions=[
+              URIImagemapAction(
+                  link_uri=urls[0],
+                  area=ImagemapArea(
+                      x=0, y=0, width=240, height=320
+                  )
+              ),
+              MessageImagemapAction(
+                  link_uri=urls[1],
+                  area=ImagemapArea(
+                      x=240, y=0, width=240, height=320
+                  )
+              )
+          ]
+        )
         messages += image_messages
       return line_bot_api.reply_message(reply_token, messages)
 
