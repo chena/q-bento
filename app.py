@@ -145,11 +145,13 @@ def handle_message(event):
                 thumbnail_image_url=urls[0],
                 title='pic1',
                 text='description1',
+                actions=[]
             ),
             CarouselColumn(
                 thumbnail_image_url=urls[1],
                 title='pic2',
                 text='description2',
+                actions=[]
             )
           ]))
         # messages += image_messages
