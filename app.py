@@ -16,7 +16,7 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, ImagemapSendMessage, BaseSize, URIImagemapAction, MessageImagemapAction, ImagemapArea
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -137,30 +137,24 @@ def handle_message(event):
       messages = [TextSendMessage(text=reply_msg)]
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
-        image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
-        # image_messages = ImagemapSendMessage(
-        #   base_url=APP_URL,
-        #   alt_text='bento',
-        #   base_size=BaseSize(height=320, width=640),
-        #   actions=[
-        #       URIImagemapAction(
-        #           link_uri=urls[0],
-        #           area=ImagemapArea(
-        #               x=0, y=0, width=240, height=320
-        #           ),
-        #           text='first'
-        #       ),
-        #       MessageImagemapAction(
-        #           link_uri=urls[1],
-        #           area=ImagemapArea(
-        #               x=240, y=0, width=240, height=320
-        #           ),
-        #           text='second'
-        #       )
-        #   ]
-        # )
-        messages += image_messages
-        # messages.append(image_messages)
+        image_messages = [TemplateSendMessage(
+          alt_text='bento',
+          template=CarouselTemplate(
+          columns=[
+            CarouselColumn(
+                thumbnail_image_url=urls[0],
+                title='pic1',
+                text='description1',
+            ),
+            CarouselColumn(
+                thumbnail_image_url=urls[1],
+                title='pic2',
+                text='description2',
+            )
+          ]))
+        ]
+        # messages += image_messages
+        messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
 
   restaurant, option = tokens[1:3]
