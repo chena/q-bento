@@ -147,13 +147,15 @@ def handle_message(event):
                   link_uri=urls[0],
                   area=ImagemapArea(
                       x=0, y=0, width=240, height=320
-                  )
+                  ),
+                  text='first'
               ),
               MessageImagemapAction(
                   link_uri=urls[1],
                   area=ImagemapArea(
                       x=240, y=0, width=240, height=320
-                  )
+                  ),
+                  text='second'
               )
           ]
         )
