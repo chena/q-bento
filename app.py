@@ -132,7 +132,7 @@ def handle_message(event):
       counts = check_frequency(second_token)
       freq = len(counts)
       total = sum([r[1] for r in counts])
-      image_ids = filter(None, [r[0] if r[2] else None for r in counts])
+      image_ids = list(filter(None, [r[0] if r[2] else None for r in counts]))
       messages = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
