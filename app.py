@@ -16,7 +16,7 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage, PostbackTemplateAction
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage, MessageAction
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -145,21 +145,21 @@ def handle_message(event):
                 thumbnail_image_url=urls[0],
                 title='pic1',
                 text='description1',
-                actions=PostbackTemplateAction(
-                    label='postback1',
-                    text='postback text1',
-                    data='action=buy&itemid=1'
-                )
+                 actions=[
+                  MessageAction(
+                    label='Bento1',
+                    text='Bento1'
+                )]
             ),
             CarouselColumn(
                 thumbnail_image_url=urls[1],
                 title='pic2',
                 text='description2',
-                actions=PostbackTemplateAction(
-                    label='postback2',
-                    text='postback text2',
-                    data='action=buy&itemid=2'
-                )
+                actions=[
+                  MessageAction(
+                    label='Bento2',
+                    text='Bento2'
+                )]
             )
           ]))
         # messages += image_messages
