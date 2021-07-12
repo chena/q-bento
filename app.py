@@ -135,10 +135,9 @@ def handle_message(event):
       bento_cards = list(filter(None, [r if r[2] else None for r in bentos]))
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
-      print('BENTO CARDS', bento_cards[0])
       if len(bento_cards):
         columns = map(lambda b: CarouselColumn(
-          thumbnail_image_url='images/{}'.format(b[2]),
+          thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
           title=b[3].strftime("%m/%d"),
           text='' if not b[4] else b[4],
           actions=[URIAction(label='Order Again', uri=b[5])]
