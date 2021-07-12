@@ -138,7 +138,7 @@ def handle_message(event):
       print('BENTO CARDS', bento_cards[0])
       if len(bento_cards):
         columns = map(lambda b: CarouselColumn(
-          thumbnail_image_url='{}images/{}'.format(APP_URL, b[2]),
+          thumbnail_image_url='images/{}'.format(b[2]),
           title=b[3].strftime("%m/%d"),
           text='' if not b[4] else b[4],
           actions=[URIAction(label='Order Again', uri=b[5])]
