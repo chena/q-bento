@@ -137,7 +137,8 @@ def handle_message(event):
       messages = [TextSendMessage(text=reply_msg)]
       if len(image_ids):
         urls = ['{}images/{}'.format(APP_URL, bid) for bid in image_ids]
-        print(urls)
+        print('first URL', urls[0])
+        print('second URL', urls[1])
         # image_messages = [ImageSendMessage(original_content_url=u, preview_image_url=u) for u in urls]
         image_messages = ImagemapSendMessage(
           base_url=APP_URL,
