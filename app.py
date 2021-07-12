@@ -144,14 +144,14 @@ def handle_message(event):
           base_size=BaseSize(height=240, width=640),
           actions=[
               URIImagemapAction(
-                  link_uri='images/' + str(image_ids[0]),
+                  link_uri=urls[0],
                   area=ImagemapArea(
                       x=0, y=0, width=240, height=320
                   ),
                   text='first'
               ),
               MessageImagemapAction(
-                  link_uri='images/' + str(image_ids[1]),
+                  link_uri=urls[1],
                   area=ImagemapArea(
                       x=240, y=0, width=240, height=320
                   ),
