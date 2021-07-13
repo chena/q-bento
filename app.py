@@ -141,7 +141,7 @@ def handle_message(event):
         columns = map(lambda b: CarouselColumn(
           thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
           title=b[3].strftime("%m/%d"),
-          text='{} (${})'.format('' if not b[4] else b[4], b[1])
+          text='{} (${})'.format('' if not b[4] else b[4], b[1]),
           actions=[URIAction(label='Order Again', uri=b[5])]
         ), bento_cards)
         image_messages = TemplateSendMessage(
