@@ -133,7 +133,7 @@ def handle_message(event):
       freq = len(bentos)
       total = sum([r[1] for r in bentos])
       bento_cards = list(filter(None, [r if r[2] else None for r in bentos]))
-      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 0 else ''), total)
+      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(bento_cards):
         columns = map(lambda b: CarouselColumn(
@@ -342,10 +342,16 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_i
     __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id))
 
 def new_restaurant(name, url=None, phone=None):
-  __insert_or_update("""
-    INSERT INTO restaurants (name, url, phone, created_at) 
-    VALUES (%s, %s, %s, %s);
-    """, (name, url, phone, datetime.now()))
+  r = find_restaurant(name)
+  if r:
+    __insert_or_update("""
+    UPDATE restaurants SET url = %s, phone = %s WHERE id = %s
+    """, (url, phone, r[0]))
+  else:
+    __insert_or_update("""
+      INSERT INTO restaurants (name, url, phone, created_at) 
+      VALUES (%s, %s, %s, %s);
+      """, (name, url, phone, datetime.now()))
 
 def __insert_or_update(sql, param):
   cur.execute(sql, param)
