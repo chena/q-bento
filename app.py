@@ -345,8 +345,8 @@ def new_restaurant(name, url=None, phone=None):
   r = find_restaurant(name)
   if r:
     __insert_or_update("""
-    UPDATE restaurants SET url = %s, phone = %s WHERE id = %s
-    """, (url, phone, str(r[0])))
+    UPDATE restaurants SET url = %s, phone = %s WHERE name = %s
+    """, (url, phone, name))
   else:
     __insert_or_update("""
       INSERT INTO restaurants (name, url, phone, created_at) 
