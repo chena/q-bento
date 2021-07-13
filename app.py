@@ -130,25 +130,24 @@ def handle_message(event):
       bento_count = get_bento_count()
       avg = round(total/bento_count)
       return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average)🤑'.format(total, bento_count, avg)) 
-    else: # check frequency
+    else: # check history
       bentos = get_bentos(second_token)
       freq = len(bentos)
       total = sum([r[1] for r in bentos])
-      bento_cards = list(filter(None, [r if r[2] else None for r in bentos]))
+      bento_cards = list(filter(None, [b if b[2] and b[5] else None for b in bentos]))
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(bento_cards):
         columns = map(lambda b: CarouselColumn(
           thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
           title=b[3].strftime("%m/%d"),
-          text='' if not b[4] else b[4],
+          text='{} (${})'.format('' if not b[4] else b[4], b[1])
           actions=[URIAction(label='Order Again', uri=b[5])]
         ), bento_cards)
         image_messages = TemplateSendMessage(
           alt_text='bento',
           template=CarouselTemplate(columns=list(columns))
         )
-        # messages += image_messages
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
 
