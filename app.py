@@ -102,7 +102,9 @@ def handle_message(event):
         phone, url = lines[1:]
       else:
         url = lines[1]
-      new_restaurant(restaurant, url, phone)
+      r = new_restaurant(restaurant, url, phone)
+      if r:
+        return bot_reply(reply_token, 'Thanks for sharing, {} info updated'.format(restaurant))
       return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list 😋'.format(restaurant))
     return bot_reply(reply_token, response)
     
@@ -347,11 +349,13 @@ def new_restaurant(name, url=None, phone=None):
     __insert_or_update("""
     UPDATE restaurants SET url = %s, phone = %s WHERE name = %s
     """, (url, phone, name))
+    return True
   else:
     __insert_or_update("""
       INSERT INTO restaurants (name, url, phone, created_at) 
       VALUES (%s, %s, %s, %s);
       """, (name, url, phone, datetime.now()))
+    return False
 
 def __insert_or_update(sql, param):
   cur.execute(sql, param)
