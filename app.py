@@ -178,7 +178,6 @@ def handle_message(event):
         return bot_reply(reply_token, 'Sorry, no match found 😥')
     # add restaurant to list
     if option.lower() == 'want' or option == '想吃':
-      # TODO: store tabetai items
       new_restaurant(restaurant)
       return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
     # add image to bento
@@ -240,7 +239,6 @@ def bot_reply(reply_token, response):
 def pick_restaurant():
   restaurants = get_bucket_list()
   index = random.randint(0, len(restaurants)-1)
-  # TODO if len is zero then get restaurants from all
   return restaurants[index]
 
 def from_keywords(keyword):
@@ -266,7 +264,8 @@ def get_bentos(restaurant, room_id=None):
   sql = """
     SELECT b.id, b.price, b.image, b.order_date, b.items, r.url FROM bentos b
     JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE r.name = %s;
+    WHERE r.name = %s
+    ORDER BY order_date DESC;
   """
   return __get_all(sql, (restaurant,))
 
