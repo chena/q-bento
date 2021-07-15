@@ -302,7 +302,7 @@ def get_bucket_list():
 
 def find_restaurant(name):
   fuzzy_name = '%{}%'.format(name)
-  return __get_first_row("SELECT id FROM restaurants WHERE name LIKE %s ESCAPE '' %s;", (fuzzy_name,))
+  return __get_first_row("SELECT id FROM restaurants WHERE name LIKE %s ESCAPE '';", (fuzzy_name,))
 
 def find_user(line_id):
   return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
