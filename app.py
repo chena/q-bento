@@ -251,14 +251,15 @@ def from_keywords(keyword):
   return __get_all(sql, (keyword, keyword, keyword))
 
 def check_last_order(restaurant):
+  name = '%{}%'.format(restaurant)
   sql = """
     SELECT b.order_date, b.items, b.price, b.id, b.image
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE r.name = %s
+    WHERE r.name LIKE %s ESCAPE ''
     ORDER BY b.order_date DESC
     LIMIT 1;
   """
-  return __get_all(sql, (restaurant,))
+  return __get_all(sql, (name,))
 
 def get_bentos(restaurant, room_id=None):
   sql = """
