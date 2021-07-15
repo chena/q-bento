@@ -262,13 +262,14 @@ def check_last_order(restaurant):
   return __get_all(sql, (name,))
 
 def get_bentos(restaurant, room_id=None):
+  name = '%{}%'.format(restaurant)
   sql = """
     SELECT b.id, b.price, b.image, b.order_date, b.items, r.url FROM bentos b
     JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE r.name = %s
+    WHERE r.name LIKE %s ESCAPE ''
     ORDER BY order_date DESC;
   """
-  return __get_all(sql, (restaurant,))
+  return __get_all(sql, (name,))
 
 def get_bento_count():
   sql = """
