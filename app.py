@@ -40,10 +40,12 @@ headers = {
 while True:
   schedule.run_pending()
   time.sleep(1)
-schedule.every().day.at('21:36').do(daily_push)
+line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='PUSH!!')
+schedule.every().day.at('21:38').do(daily_push)
 schedule.every(1).minutes.do(line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!')))
 
 def daily_push():
+  print('PUSH')
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
   # TODO: with quick reply - bento what, bento pick
 
