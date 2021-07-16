@@ -6,8 +6,8 @@ import psycopg2
 import phonenumbers
 import random
 import requests
-import schedule
 import time
+from flask_apscheduler import APScheduler
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -37,6 +37,13 @@ headers = {
   "Authorization": "Bearer " + TOKEN
 }
 
+# initialize scheduler
+scheduler = APScheduler()
+scheduler.api_enabled = True
+scheduler.init_app(app)
+scheduler.start()
+
+@scheduler.task('cron', id='daily_push', day='*', hour='14', minute='32')
 def daily_push():
   print('PUSH')
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
@@ -45,13 +52,13 @@ def daily_push():
 def test():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
 
-schedule.every().day.at('22:16').do(daily_push)
-schedule.every(1).minutes.do(test)
+# schedule.every().day.at('22:16').do(daily_push)
+# schedule.every(1).minutes.do(test)
 
-# scheduled push message
-while True:
-  schedule.run_pending()
-  time.sleep(1)
+# # scheduled push message
+# while True:
+#   schedule.run_pending()
+#   time.sleep(1)
 
 @app.route('/callback', methods=['POST'])
 def callback():
