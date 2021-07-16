@@ -39,7 +39,7 @@ headers = {
 # scheduled push message
 schedule.run_pending()
 time.sleep(1)
-schedule.every().day.at(21:30).do(daily_push)
+schedule.every().day.at('21:32').do(daily_push)
 
 def daily_push():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
