@@ -49,7 +49,7 @@ scheduler.start()
 def daily_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='今天吃什麼呢？'))
 
-@scheduler.task('cron', id='daily_push', hour='16', minutes='17')
+@scheduler.task('cron', id='test_push', hour='16', minute='19')
 def daily_push():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(
     text='今天吃什麼呢？',
