@@ -18,7 +18,9 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction
+  MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, 
+  CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction,
+  QuickReply, QuickReplyButton, MessageAction
 )
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -43,15 +45,16 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='daily_push', hour='16')
+@scheduler.task('cron', id='daily_push', hour='3')
 def daily_push():
-  print('PUSH')
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
-  # TODO: with quick reply - bento what, bento pick
+  line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='今天吃什麼呢？'))
 
-@scheduler.task('cron', id='hello_push', hour='9')
-def test():
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
+@scheduler.task('cron', id='daily_push', hour='16', minutes='17')
+def daily_push():
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(
+    text='今天吃什麼呢？',
+    quick_reply=QuickReply(items=[QuickReplyButton(action=MessageAction(label="隨機選", text="bento pick"))])
+  ))
 
 @app.route('/callback', methods=['POST'])
 def callback():
