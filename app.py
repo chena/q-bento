@@ -6,6 +6,7 @@ import psycopg2
 import phonenumbers
 import random
 import requests
+import schedule
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -22,6 +23,7 @@ from linebot.models import (
 DATABASE_URL = os.environ['DATABASE_URL']
 APP_URL = os.environ['APP_URL']
 TOKEN = os.environ['CHANNE_ACCESS_TOKEN']
+LINE_GROUP_ID = os.environ['LINE_GROUP_ID']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
@@ -32,7 +34,16 @@ handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 headers = {
   "Content-Type": "application/json",
   "Authorization": "Bearer " + TOKEN
-};
+}
+
+# scheduled push message
+schedule.run_pending()
+time.sleep(1)
+schedule.every().day.at(21:30).do(daily_push)
+
+def daily_push():
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
+  # TODO: with quick reply - bento what, bento pick
 
 @app.route('/callback', methods=['POST'])
 def callback():
