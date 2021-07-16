@@ -7,6 +7,7 @@ import phonenumbers
 import random
 import requests
 import schedule
+import time
 
 from linebot import (
   LineBotApi, WebhookHandler
