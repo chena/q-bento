@@ -38,11 +38,11 @@ headers = {
 }
 
 # scheduled push message
-while True:
-  schedule.run_pending()
-  time.sleep(1)
+# while True:
+#   schedule.run_pending()
+#   time.sleep(1)
 line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='PUSH!!'))
-schedule.every().day.at('21:44').do(daily_push)
+schedule.every().day.at('21:52').do(daily_push)
 schedule.every(1).minutes.do(line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!')))
 
 def daily_push():
