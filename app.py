@@ -43,13 +43,13 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='daily_push', hour='15', minute='24')
+@scheduler.task('cron', id='daily_push', hour='11', minute='29')
 def daily_push():
   print('PUSH')
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
   # TODO: with quick reply - bento what, bento pick
 
-@scheduler.task('cron', id='hello_push', hour="23", minute='25')
+@scheduler.task('cron', id='hello_push', minute='30')
 def test():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
 
