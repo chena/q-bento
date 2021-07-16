@@ -45,8 +45,13 @@ def daily_push():
 def test():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
 
-schedule.every().day.at('22:12').do(daily_push)
+schedule.every().day.at('22:16').do(daily_push)
 schedule.every(1).minutes.do(test)
+
+# scheduled push message
+while True:
+  schedule.run_pending()
+  time.sleep(1)
 
 @app.route('/callback', methods=['POST'])
 def callback():
@@ -388,7 +393,3 @@ def __get_all(sql, param):
 
 if __name__ == '__main__':
   app.run()
-  # scheduled push message
-  # while True:
-  #   schedule.run_pending()
-  #   time.sleep(1)
