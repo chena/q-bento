@@ -43,22 +43,11 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='daily_push', day='*', hour='14', minute='32')
+@scheduler.task('cron', id='daily_push', day='*', hour='14', minute='34')
 def daily_push():
   print('PUSH')
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
   # TODO: with quick reply - bento what, bento pick
-
-def test():
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
-
-# schedule.every().day.at('22:16').do(daily_push)
-# schedule.every(1).minutes.do(test)
-
-# # scheduled push message
-# while True:
-#   schedule.run_pending()
-#   time.sleep(1)
 
 @app.route('/callback', methods=['POST'])
 def callback():
