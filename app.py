@@ -37,14 +37,16 @@ headers = {
   "Authorization": "Bearer " + TOKEN
 }
 
-line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='PUSH!!'))
-schedule.every().day.at('22:08').do(line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？')))
-schedule.every(1).minutes.do(line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!')))
-
 def daily_push():
   print('PUSH')
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='今天吃什麼呢？'))
   # TODO: with quick reply - bento what, bento pick
+
+def test():
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='Hello!!'))
+
+schedule.every().day.at('22:12').do(daily_push)
+schedule.every(1).minutes.do(test)
 
 @app.route('/callback', methods=['POST'])
 def callback():
