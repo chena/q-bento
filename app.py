@@ -63,7 +63,7 @@ def morning_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='25')
+@scheduler.task('cron', id='test_push', hour='7', minute='30')
 def test_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
