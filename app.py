@@ -44,7 +44,6 @@ scheduler = APScheduler()
 scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
-scheduler.add_cron_job(test_push, hour='7', minute='48')
 
 @scheduler.task('cron', id='lunch_push', hour='4', minute='30')
 def lunch_push():
@@ -64,6 +63,7 @@ def morning_push():
     ])
   ))
 
+
 # @scheduler.task('cron', id='test_push', hour='7', minute='50')
 def test_push():
   last_bento_date = get_last_bento()[1]
@@ -71,6 +71,8 @@ def test_push():
   if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
     msg = '午安😎今天吃了什麼呢？'
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
+
+scheduler.add_cron_job(test_push, hour='7', minute='56')
 
 @app.route('/callback', methods=['POST'])
 def callback():
