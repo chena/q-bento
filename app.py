@@ -46,28 +46,31 @@ scheduler.init_app(app)
 scheduler.start()
 
 @scheduler.task('cron', id='lunch_push', hour='4', minute='30')
-def daily_push():
+def lunch_push():
   if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
     line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
   else:
     print('BENTO reported!')
 
 @scheduler.task('cron', id='morning_push', hour='3', minute='0')
-def daily_push():
+def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label="Q便當隨機選🤖", text="bento pick")),
-      QuickReplyButton(action=MessageAction(label="看看想吃清單🍱", text="bento what"))
+      QuickReplyButton(action=MessageAction(label="看看想吃清單❤️", text="bento what")),
+      QuickReplyButton(action=MessageAction(label="來吃久違的便當🍱", text="bento recent"))
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='5')
-def daily_push():
+@scheduler.task('cron', id='test_push', hour='7', minute='10')
+def test_push():
+  if app.debug:
+    return None
   last_bento_date = get_last_bento()[1]
   print('datetime date:', datetime.now().strftime('%Y-%m-%d'))
   print('last_bento_date:', last_bento_date)
   msg = '午安😎今天運動了嗎？'
-  if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
+  if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
     msg = '午安😎今天吃了什麼呢？'
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
 
