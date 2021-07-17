@@ -58,9 +58,13 @@ def daily_push():
     ])
   ))
 
-@scheduler.task('cron', id='lunch_push', hour='6', minute='33')
+@scheduler.task('cron', id='test_push', hour='6', minute='43')
 def daily_push():
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='午安😎今天運動了嗎？'))
+  last_bento_date = get_last_bento()[1]
+  msg = '午安😎今天運動了嗎？'
+  if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
+    msg = '午安😎今天吃了什麼呢？'
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
 
 @app.route('/callback', methods=['POST'])
 def callback():
@@ -86,7 +90,7 @@ def get_or_save_image(bento_id):
     __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
     return 'OK'
   if bento_id == 'last':
-    bento_id = get_last_bento()
+    bento_id = get_last_bento()[0]
   image_binary = get_bento_image(bento_id)
   return send_file(
     io.BytesIO(image_binary),
@@ -101,7 +105,7 @@ def handle_image(event):
   r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
   content = r.text
   # persist binary data
-  bento_id = get_last_bento()
+  bento_id = get_last_bento()[0]
   __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (r.content, bento_id))
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
@@ -338,7 +342,7 @@ def find_user(line_id):
 
 def get_last_bento():
   last_order_sql = """
-    SELECT b.id 
+    SELECT b.id, date(b.order_date)
     FROM bentos b ORDER BY b.order_date DESC
     LIMIT 1;
   """
