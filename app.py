@@ -47,7 +47,8 @@ scheduler.start()
 
 @scheduler.task('cron', id='lunch_push', hour='4', minute='30')
 def lunch_push():
-  if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
+  last_bento_date = get_last_bento()[1]
+  if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
     line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
   else:
     print('BENTO reported!')
@@ -58,17 +59,13 @@ def morning_push():
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label="Q便當隨機選🤖", text="bento pick")),
       QuickReplyButton(action=MessageAction(label="看看想吃清單❤️", text="bento what")),
-      QuickReplyButton(action=MessageAction(label="來吃久違的便當🍱", text="bento recent"))
+      QuickReplyButton(action=MessageAction(label="來吃久違的便當🍱", text="bento old"))
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='10')
+@scheduler.task('cron', id='test_push', hour='7', minute='25')
 def test_push():
-  if app.debug:
-    return None
   last_bento_date = get_last_bento()[1]
-  print('datetime date:', datetime.now().strftime('%Y-%m-%d'))
-  print('last_bento_date:', last_bento_date)
   msg = '午安😎今天運動了嗎？'
   if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
     msg = '午安😎今天吃了什麼呢？'
@@ -165,6 +162,9 @@ def handle_message(event):
       if tabetai:
         reply += '\n👍 {}'.format(tabetai)
       return bot_reply(reply_token, reply)
+    else if second_token == 'old':
+      old_bentos = [r[0] for r in get_old_bentos()]
+      return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(old_bentos)))
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
@@ -361,11 +361,11 @@ def get_bento_image(bento_id):
     SELECT image FROM bentos WHERE id = %s
   """, (str(bento_id),))
 
-def get_recent_bentos():
+def get_old_bentos():
   sql = """
     SELECT r.name , MAX(b.order_date) AS odate
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
-    GROUP BY r.name ORDER BY odate DESC
+    GROUP BY r.name ORDER BY odate
     LIMIT 3;
   """
   return __get_all(sql, ())
@@ -422,4 +422,4 @@ def __get_all(sql, param):
   return cur.fetchall()
 
 if __name__ == '__main__':
-  app.run(use_reloader=False)
+  app.run(use_reloader=False, debug=True)
