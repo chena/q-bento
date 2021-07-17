@@ -64,7 +64,7 @@ def morning_push():
   ))
 
 
-# @scheduler.task('cron', id='test_push', hour='7', minute='50')
+@scheduler.task('cron', id='test_push', hour='8', minute='10')
 def test_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
@@ -72,7 +72,7 @@ def test_push():
     msg = '午安😎今天吃了什麼呢？'
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
 
-scheduler.add_job(test_push, 'cron', hour='8', minute='3')
+# scheduler.add_job(test_push, 'cron', hour='8', minute='3')
 
 @app.route('/callback', methods=['POST'])
 def callback():
