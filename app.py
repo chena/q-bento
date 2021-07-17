@@ -162,7 +162,7 @@ def handle_message(event):
       if tabetai:
         reply += '\n👍 {}'.format(tabetai)
       return bot_reply(reply_token, reply)
-    else if second_token == 'old':
+    elif second_token == 'old':
       old_bentos = [r[0] for r in get_old_bentos()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(old_bentos)))
     elif second_token == 'total' or second_token == '合計':
