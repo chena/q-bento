@@ -72,7 +72,7 @@ def test_push():
     msg = '午安😎今天吃了什麼呢？'
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
 
-scheduler.add_cron_job(test_push, hour='7', minute='56')
+scheduler.add_job(test_push, hour='8', minute='0')
 
 @app.route('/callback', methods=['POST'])
 def callback():
