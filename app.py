@@ -44,6 +44,7 @@ scheduler = APScheduler()
 scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
+scheduler.add_cron_job(test_push, hour='7', minute='48')
 
 @scheduler.task('cron', id='lunch_push', hour='4', minute='30')
 def lunch_push():
@@ -63,7 +64,7 @@ def morning_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='30')
+# @scheduler.task('cron', id='test_push', hour='7', minute='50')
 def test_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
@@ -365,6 +366,7 @@ def get_old_bentos():
   sql = """
     SELECT r.name , MAX(b.order_date) AS odate
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE NOT r.dame IS NOT true AND r.available IS NOT false
     GROUP BY r.name ORDER BY odate
     LIMIT 3;
   """
@@ -422,4 +424,4 @@ def __get_all(sql, param):
   return cur.fetchall()
 
 if __name__ == '__main__':
-  app.run(use_reloader=False, debug=True)
+  app.run()
