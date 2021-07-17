@@ -49,7 +49,7 @@ scheduler.start()
 def daily_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
 
-@scheduler.task('cron', id='morning_push', hour='4', minute='0')
+@scheduler.task('cron', id='morning_push', hour='3', minute='0')
 def daily_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -57,6 +57,10 @@ def daily_push():
       QuickReplyButton(action=MessageAction(label="看看想吃清單🍱", text="bento what"))
     ])
   ))
+
+@scheduler.task('cron', id='lunch_push', hour='6', minute='33')
+def daily_push():
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='午安😎今天運動了嗎？'))
 
 @app.route('/callback', methods=['POST'])
 def callback():
@@ -397,4 +401,4 @@ def __get_all(sql, param):
   return cur.fetchall()
 
 if __name__ == '__main__':
-  app.run()
+  app.run(use_reloader=False)
