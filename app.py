@@ -58,7 +58,7 @@ def daily_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='6', minute='47')
+@scheduler.task('cron', id='test_push', hour='6', minute='50')
 def daily_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
@@ -346,7 +346,7 @@ def get_last_bento():
     FROM bentos b ORDER BY b.order_date DESC
     LIMIT 1;
   """
-  return __get_all(last_order_sql, ())
+  return __get_all(last_order_sql, ())[0]
 
 def get_bento_image(bento_id):
   return __get_first_row("""
