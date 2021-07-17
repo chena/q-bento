@@ -64,7 +64,7 @@ def morning_push():
   ))
 
 
-@scheduler.task('cron', id='test_push', hour='8', minute='10')
+# @scheduler.task('cron', id='test_push', hour='8', minute='10')
 def test_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
@@ -368,7 +368,7 @@ def get_old_bentos():
   sql = """
     SELECT r.name , MAX(b.order_date) AS odate
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE NOT r.dame IS NOT true AND r.available IS NOT false
+    WHERE r.dame IS NOT true AND r.available IS NOT false
     GROUP BY r.name ORDER BY odate
     LIMIT 3;
   """
