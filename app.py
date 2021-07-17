@@ -47,7 +47,10 @@ scheduler.start()
 
 @scheduler.task('cron', id='lunch_push', hour='4', minute='30')
 def daily_push():
-  line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
+  if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
+    line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
+  else:
+    print('BENTO reported!')
 
 @scheduler.task('cron', id='morning_push', hour='3', minute='0')
 def daily_push():
@@ -58,7 +61,7 @@ def daily_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='6', minute='50')
+@scheduler.task('cron', id='test_push', hour='7', minute='0')
 def daily_push():
   last_bento_date = get_last_bento()[1]
   msg = '午安😎今天運動了嗎？'
