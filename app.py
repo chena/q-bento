@@ -61,9 +61,11 @@ def daily_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='0')
+@scheduler.task('cron', id='test_push', hour='7', minute='5')
 def daily_push():
   last_bento_date = get_last_bento()[1]
+  print('datetime date:', datetime.now().strftime('%Y-%m-%d'))
+  print('last_bento_date:', last_bento_date)
   msg = '午安😎今天運動了嗎？'
   if datetime.now().strftime('%Y-%m-%d') != last_bento_date:
     msg = '午安😎今天吃了什麼呢？'
@@ -355,6 +357,15 @@ def get_bento_image(bento_id):
   return __get_first_row("""
     SELECT image FROM bentos WHERE id = %s
   """, (str(bento_id),))
+
+def get_recent_bentos():
+  sql = """
+    SELECT r.name , MAX(b.order_date) AS odate
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    GROUP BY r.name ORDER BY odate DESC
+    LIMIT 3;
+  """
+  return __get_all(sql, ())
 
 def new_user(line_id, name=None):
   __insert_or_update("""
