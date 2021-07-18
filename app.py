@@ -42,13 +42,13 @@ headers = {
 }
 
 # initialize scheduler
-if not flask_app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
   scheduler = APScheduler()
   scheduler.api_enabled = True
   scheduler.init_app(app)
   scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', hour='5', minute='0')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='5', minute='0')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
