@@ -42,7 +42,7 @@ headers = {
 }
 
 # initialize scheduler
-if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == True:
   scheduler = APScheduler()
   scheduler.api_enabled = True
   scheduler.init_app(app)
@@ -56,7 +56,7 @@ def lunch_push():
   else:
     print('BENTO reported!')
 
-@scheduler.task('cron', id='morning_push', hour='3', minute='30')
+@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='30')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -66,7 +66,7 @@ def morning_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='*')
+@scheduler.task('cron', id='test_push', hour='7', minute='12')
 def test_push():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='TEST TEST'))
 
