@@ -47,7 +47,7 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', hour='4', minute='30')
+@scheduler.task('cron', id='lunch_push', hour='5', minute='0')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
@@ -423,4 +423,4 @@ def __get_all(sql, param):
   return cur.fetchall()
 
 if __name__ == '__main__':
-  app.run()
+  app.run(use_reloader=False)
