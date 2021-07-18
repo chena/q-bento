@@ -23,17 +23,19 @@ from linebot.models import (
   QuickReply, QuickReplyButton, MessageAction
 )
 
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DATABASE_URL'] 
 APP_URL = os.environ['APP_URL']
 TOKEN = os.environ['CHANNE_ACCESS_TOKEN']
 LINE_GROUP_ID = os.environ['LINE_GROUP_ID']
+CHANNEL_SECRET = os.environ['CHANNEL_SECRET']
+
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(TOKEN)
-handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
+handler = WebhookHandler(CHANNEL_SECRET)
 headers = {
   "Content-Type": "application/json",
   "Authorization": "Bearer " + TOKEN
@@ -53,7 +55,7 @@ def lunch_push():
   else:
     print('BENTO reported!')
 
-@scheduler.task('cron', id='morning_push', hour='3', minute='0')
+@scheduler.task('cron', id='morning_push', hour='3', minute='30')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -63,14 +65,9 @@ def morning_push():
     ])
   ))
 
-
-# @scheduler.task('cron', id='test_push', hour='8', minute='10')
+@scheduler.task('cron', id='test_push', hour='12', minute='7')
 def test_push():
-  last_bento_date = get_last_bento()[1]
-  msg = '午安😎今天運動了嗎？'
-  if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
-    msg = '午安😎今天吃了什麼呢？'
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text=msg))
+  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='TEST TEST'))
 
 # scheduler.add_job(test_push, 'cron', hour='8', minute='3')
 
