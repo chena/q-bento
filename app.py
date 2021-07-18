@@ -42,10 +42,11 @@ headers = {
 }
 
 # initialize scheduler
-scheduler = APScheduler()
-scheduler.api_enabled = True
-scheduler.init_app(app)
-scheduler.start()
+if not flask_app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+  scheduler = APScheduler()
+  scheduler.api_enabled = True
+  scheduler.init_app(app)
+  scheduler.start()
 
 @scheduler.task('cron', id='lunch_push', hour='5', minute='0')
 def lunch_push():
