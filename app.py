@@ -65,7 +65,7 @@ def morning_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='12', minute='7')
+@scheduler.task('cron', id='test_push', hour='7', minute='*')
 def test_push():
   line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='TEST TEST'))
 
