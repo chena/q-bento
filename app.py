@@ -29,6 +29,8 @@ TOKEN = os.environ['CHANNE_ACCESS_TOKEN']
 LINE_GROUP_ID = os.environ['LINE_GROUP_ID']
 CHANNEL_SECRET = os.environ['CHANNEL_SECRET']
 
+DATE_FORMAT = '%Y-%m-%d'
+
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
@@ -50,7 +52,7 @@ scheduler.start()
 @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='30')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
-  if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
+  if datetime.now().strftime(DATE_FORMAT) != str(last_bento_date):
     line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
   else:
     print('BENTO reported!')
@@ -211,13 +213,37 @@ def handle_message(event):
       else:
         return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
 
-    # find restaurants from keywords
     if restaurant == 'what':
-      found_restaurants = [r[0] for r in from_keywords(option)]
-      if len(found_restaurants) > 0:
-        return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
-      else:
-        return bot_reply(reply_token, 'Sorry, no match found 😥')
+      # check if third token is a date
+      try:
+        order_date = datetime.strptime(option, DATE_FORMAT)
+        bentos = get_bento_from_date(order_date)
+        restaurants = [b[3] for b in bentos]
+        reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), order_date.strftime("%m/%d"))
+        bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
+        messages = [TextSendMessage(text=reply_msg)]
+        if len(bento_cards):
+          columns = map(lambda b: CarouselColumn(
+            thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
+            title=b[3],
+            text='{} (${})'.format('' if not b[4] else b[4], b[1]),
+            actions=[
+              URIAction(label='放大', uri='{}images/{}'.format(APP_URL, b[0])), 
+              URIAction(label='Order Again', uri=b[5]) if b[5] else None
+          ]), bento_cards)
+          image_messages = TemplateSendMessage(
+            alt_text='bento',
+            template=CarouselTemplate(columns=list(columns))
+          )
+          messages.append(image_messages)
+          return line_bot_api.reply_message(reply_token, messages)
+      except err:
+        # find restaurants from keywords
+        found_restaurants = [r[0] for r in from_keywords(option)]
+        if len(found_restaurants) > 0:
+          return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
+        else:
+          return bot_reply(reply_token, 'Sorry, no match found 😥')
     # add restaurant to list
     if option.lower() == 'want' or option == '想吃':
       new_restaurant(restaurant)
@@ -259,10 +285,12 @@ def get_usage():
   * First token can be 'bento' or '便當'
   * New bento entry:
     bento [restaurant] [date] [price] [items]
-  * Check order frequency:
+  * Check order history from a restaurant:
     bento [restaurant]
-  * Check last order:
+  * Check last order from a restrant:
     bento [restaurant] when
+  * Check order from a date:
+    bento what [date]
   * Add new restaurant to bucket list:
     bento [restaurant] want
   * Get restaurants from bucket list:
@@ -303,11 +331,19 @@ def check_last_order(restaurant):
   """
   return __get_all(sql, (name,))
 
+def get_bento_from_date(order_date):
+  sql = """
+    SELECT b.id, b.price, b.image, r.name, b.items, r.url
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE b.order_date = %s;
+  """
+  return __get_all(sql, (order_date,))
+
 def get_bentos(restaurant, room_id=None):
   name = '%{}%'.format(restaurant)
   sql = """
-    SELECT b.id, b.price, b.image, b.order_date, b.items, r.url FROM bentos b
-    JOIN restaurants r ON b.restaurant_id = r.id
+    SELECT b.id, b.price, b.image, b.order_date, b.items, r.url 
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name LIKE %s ESCAPE ''
     ORDER BY order_date DESC;
   """
