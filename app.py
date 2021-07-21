@@ -240,7 +240,7 @@ def handle_message(event):
           )
           messages.append(image_messages)
           return line_bot_api.reply_message(reply_token, messages)
-      except err:
+      except:
         # find restaurants from keywords
         found_restaurants = [r[0] for r in from_keywords(option)]
         if len(found_restaurants) > 0:
