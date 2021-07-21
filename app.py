@@ -216,7 +216,12 @@ def handle_message(event):
     if restaurant == 'what':
       # check if third token is a date
       try:
-        order_date = datetime.strptime(option, DATE_FORMAT)
+        if order_date in ['today', '今天']:
+          order_date = datetime.today().strftime(DATE_FORMAT)
+        elif order_date == ['yesterday', '昨天']:
+          order_date = datetime.today().strftime(DATE_FORMAT) - datetime.timedelta(days=1)
+        else:
+          order_date = datetime.strptime(option, DATE_FORMAT)
         bentos = get_bento_from_date(order_date)
         formatted_date = order_date.strftime("%m/%d")
         if not len(bentos):
