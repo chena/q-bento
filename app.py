@@ -216,9 +216,9 @@ def handle_message(event):
     if restaurant == 'what':
       # check if third token is a date
       try:
-        if order_date in ['today', '今天']:
+        if option in ['today', '今天']:
           order_date = datetime.today().strftime(DATE_FORMAT)
-        elif order_date == ['yesterday', '昨天']:
+        elif option == ['yesterday', '昨天']:
           order_date = datetime.today().strftime(DATE_FORMAT) - datetime.timedelta(days=1)
         else:
           order_date = datetime.strptime(option, DATE_FORMAT)
