@@ -220,7 +220,7 @@ def handle_message(event):
         if option in ['today', '今天']:
           order_date = today.strftime(DATE_FORMAT)
           formatted_date = today.strftime("%m/%d")
-        elif option == ['yesterday', '天']:
+        elif option in ['yesterday', '昨天']:
           yesterday = today - timedelta(days=1)
           order_date = yesterday.strftime(DATE_FORMAT)
           formatted_date = yesterday.strftime("%m/%d")
