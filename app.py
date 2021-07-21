@@ -19,7 +19,7 @@ from linebot.exceptions import (
 
 from linebot.models import (
   MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, 
-  CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction, MessageAction,
+  CarouselColumn, ImageCarouselTemplate, TemplateSendMessage, URIAction, MessageAction,
   QuickReply, QuickReplyButton, MessageAction
 )
 
@@ -184,11 +184,11 @@ def handle_message(event):
           text='{} (${})'.format('' if not b[4] else b[4], b[1]),
           actions=[
             URIAction(label='Order Again', uri=b[5]) if b[5] else 
-            MessageAction(label='OK', text='')]
+            MessageAction(text='🤖🤖')]
         ), bento_cards)
         image_messages = TemplateSendMessage(
           alt_text='bento',
-          template=CarouselTemplate(columns=list(columns))
+          template=ImageCarouselTemplate(columns=list(columns))
         )
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
