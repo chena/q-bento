@@ -19,7 +19,7 @@ from linebot.exceptions import (
 
 from linebot.models import (
   MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, 
-  CarouselColumn, ImageCarouselTemplate, TemplateSendMessage, URIAction, MessageAction,
+  CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction,
   QuickReply, QuickReplyButton, MessageAction
 )
 
@@ -55,7 +55,7 @@ def lunch_push():
   else:
     print('BENTO reported!')
 
-@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='15')
+@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='0')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -182,13 +182,11 @@ def handle_message(event):
           thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
           title=b[3].strftime("%m/%d"),
           text='{} (${})'.format('' if not b[4] else b[4], b[1]),
-          actions=[
-            URIAction(label='Order Again', uri=b[5]) if b[5] else 
-            MessageAction(text='🤖🤖')]
+          actions=[URIAction(label='Order Again', uri=b[5] if b[5] else '{}images/{}'.format(APP_URL, b[0]))]
         ), bento_cards)
         image_messages = TemplateSendMessage(
           alt_text='bento',
-          template=ImageCarouselTemplate(columns=list(columns))
+          template=CarouselTemplate(columns=list(columns))
         )
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
