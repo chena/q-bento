@@ -219,7 +219,7 @@ def handle_message(event):
         order_date = datetime.strptime(option, DATE_FORMAT)
         bentos = get_bento_from_date(order_date)
         formatted_date = order_date.strftime("%m/%d")
-        if not len(bentos) == 0:
+        if not len(bentos):
           return bot_reply(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
         reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
