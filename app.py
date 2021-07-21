@@ -219,6 +219,7 @@ def handle_message(event):
         order_date = datetime.strptime(option, DATE_FORMAT)
         bentos = get_bento_from_date(order_date)
         formatted_date = order_date.strftime("%m/%d")
+        print('BENTO COUNT', len(bentos))
         if len(bentos) == 0:
           return line_bot_api.reply_message(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
