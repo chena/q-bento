@@ -183,7 +183,7 @@ def handle_message(event):
           title=b[3].strftime("%m/%d"),
           text='{} (${})'.format('' if not b[4] else b[4], b[1]),
           actions=[
-            URIAction(labe='放大', uri='{}images/{}'.format(APP_URL, b[0])), 
+            URIAction(label='放大', uri='{}images/{}'.format(APP_URL, b[0])), 
             URIAction(label='Order Again', uri=b[5]) if b[5] else None
         ]), bento_cards)
         image_messages = TemplateSendMessage(
