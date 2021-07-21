@@ -19,7 +19,7 @@ from linebot.exceptions import (
 
 from linebot.models import (
   MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, 
-  CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction,
+  CarouselColumn, CarouselTemplate, TemplateSendMessage, URIAction, MessageAction,
   QuickReply, QuickReplyButton, MessageAction
 )
 
@@ -174,7 +174,7 @@ def handle_message(event):
       bentos = get_bentos(second_token)
       freq = len(bentos)
       total = sum([r[1] for r in bentos])
-      bento_cards = list(filter(None, [b if b[2] and b[5] else None for b in bentos]))
+      bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(bento_cards):
@@ -182,7 +182,9 @@ def handle_message(event):
           thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
           title=b[3].strftime("%m/%d"),
           text='{} (${})'.format('' if not b[4] else b[4], b[1]),
-          actions=[URIAction(label='Order Again', uri=b[5])]
+          actions=[
+            URIAction(label='Order Again', uri=b[5]) if b[5] else 
+            MessageAction(label='OK', text='')]
         ), bento_cards)
         image_messages = TemplateSendMessage(
           alt_text='bento',
