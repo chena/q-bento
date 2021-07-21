@@ -47,7 +47,7 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='5', minute='7')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='30')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime('%Y-%m-%d') != str(last_bento_date):
@@ -55,7 +55,7 @@ def lunch_push():
   else:
     print('BENTO reported!')
 
-@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='30')
+@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='0')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -110,7 +110,7 @@ def handle_image(event):
   r = requests.get('https://api-data.line.me/v2/bot/message/{}/content'.format(message.id), headers=headers)
   content = r.text
   # persist binary data
-  bento_id = get_last_bento()[0]
+  bento_id = get_last_bento('created_at')[0]
   __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (r.content, bento_id))
   return bot_reply(reply_token, 'Bento image uploaded! 📸')
 
@@ -350,12 +350,13 @@ def find_restaurant(name):
 def find_user(line_id):
   return __get_first_row("SELECT id FROM users WHERE line_id = %s;", (line_id,))
 
-def get_last_bento():
+def get_last_bento(order_by='order_date'):
   last_order_sql = """
     SELECT b.id, date(b.order_date)
-    FROM bentos b ORDER BY b.order_date DESC
+    FROM bentos b 
+    ORDER BY %s DESC
     LIMIT 1;
-  """
+  """.format(order_by)
   return __get_all(last_order_sql, ())[0]
 
 def get_bento_image(bento_id):
