@@ -1,6 +1,6 @@
 import os
 import io
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, request, send_file
 import psycopg2
 import phonenumbers
@@ -215,15 +215,19 @@ def handle_message(event):
 
     if restaurant == 'what':
       # check if third token is a date
+      today = datetime.today()
       try:
         if option in ['today', '今天']:
-          order_date = datetime.today().strftime(DATE_FORMAT)
-        elif option == ['yesterday', '昨天']:
-          order_date = datetime.today().strftime(DATE_FORMAT) - datetime.timedelta(days=1)
+          order_date = today.strftime(DATE_FORMAT)
+          formatted_date = today.strftime("%m/%d")
+        elif option == ['yesterday', '天']:
+          yesterday = today - timedelta(days=1)
+          order_date = yesterday.strftime(DATE_FORMAT)
+          formatted_date = yesterday.strftime("%m/%d")
         else:
           order_date = datetime.strptime(option, DATE_FORMAT)
+          formatted_date = order_date.strftime("%m/%d")
         bentos = get_bento_from_date(order_date)
-        formatted_date = order_date.strftime("%m/%d")
         if not len(bentos):
           return bot_reply(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
