@@ -219,8 +219,7 @@ def handle_message(event):
         order_date = datetime.strptime(option, DATE_FORMAT)
         bentos = get_bento_from_date(order_date)
         formatted_date = order_date.strftime("%m/%d")
-        print('BENTO COUNT', len(bentos))
-        if not len(bentos):
+        if len(bentos) == 0:
           return line_bot_api.reply_message(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
         reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
@@ -339,7 +338,7 @@ def get_bento_from_date(order_date):
   sql = """
     SELECT b.id, b.price, b.image, r.name, b.items, r.url
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE b.order_date = %s;
+    WHERE date(b.order_date) = %s;
   """
   return __get_all(sql, (order_date,))
 
