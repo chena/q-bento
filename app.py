@@ -221,6 +221,7 @@ def handle_message(event):
         formatted_date = order_date.strftime("%m/%d")
         print('BENTO COUNT', len(bentos))
         if len(bentos) == 0:
+          print('HELLO?', order_date)
           return line_bot_api.reply_message(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
         reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
@@ -241,7 +242,8 @@ def handle_message(event):
           )
           messages.append(image_messages)
           return line_bot_api.reply_message(reply_token, messages)
-      except:
+      except ValueError as e:
+        print('ERROR', e)
         # find restaurants from keywords
         found_restaurants = [r[0] for r in from_keywords(option)]
         if len(found_restaurants) > 0:
