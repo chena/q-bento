@@ -55,7 +55,7 @@ def lunch_push():
   else:
     print('BENTO reported!')
 
-@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='0')
+@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='15')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -354,7 +354,7 @@ def get_last_bento(order_by='order_date'):
   last_order_sql = """
     SELECT b.id, date(b.order_date)
     FROM bentos b 
-    ORDER BY %s DESC
+    ORDER BY {} DESC
     LIMIT 1;
   """.format(order_by)
   return __get_all(last_order_sql, ())[0]
