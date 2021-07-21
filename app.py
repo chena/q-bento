@@ -218,8 +218,11 @@ def handle_message(event):
       try:
         order_date = datetime.strptime(option, DATE_FORMAT)
         bentos = get_bento_from_date(order_date)
+        formatted_date = order_date.strftime("%m/%d")
+        if not len(bentos):
+          return line_bot_api.reply_message(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
-        reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), order_date.strftime("%m/%d"))
+        reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
         bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
         messages = [TextSendMessage(text=reply_msg)]
         if len(bento_cards):
