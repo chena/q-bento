@@ -148,7 +148,7 @@ def handle_message(event):
     return bot_reply(reply_token, response)
     
   if token_count == 1:
-    return bot_reply(reply_token, get_usage())
+    return print_usage(reply_token)
   if token_count == 2:
     second_token = tokens[1]
     if second_token == 'what':
@@ -295,8 +295,8 @@ def handle_message(event):
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
 
-def get_usage():
-  return """Usage as follows:
+def print_usage(reply_token):
+  usage = """Usage as follows:
   * First token can be 'bento' or '便當'
   * New bento entry:
     bento [restaurant] [date|today|yesterday] [price] [items]
@@ -317,6 +317,15 @@ def get_usage():
   * Pick one restaurant from bucket list:
     bento pick
   """
+  messages = TextSendMessage(
+    text=usage, quick_reply=QuickReply(items=[
+      QuickReplyButton(action=MessageAction(label="防疫便當花了多少錢呢？💰", text="bento total")),
+      QuickReplyButton(action=MessageAction(label="昨天吃什麼？🍱", text="bento old")),
+      QuickReplyButton(action=MessageAction(label="今天要吃什麼呢？😋", text="bento pick")),
+      QuickReplyButton(action=MessageAction(label="看看想吃清單❤️", text="bento what"))
+    ])
+  )
+  line_bot_api.reply_message(reply_token, messages)
 
 def bot_reply(reply_token, response):
   line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
