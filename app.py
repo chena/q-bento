@@ -296,26 +296,33 @@ def handle_message(event):
 
 
 def print_usage(reply_token):
-  usage = """Usage as follows:
-  * First token can be 'bento' or '便當'
-  * New bento entry:
-    bento [restaurant] [date|today|yesterday] [price] [items]
-  * Check order history from a restaurant:
-    bento [restaurant]
-  * Check last order from a restrant:
-    bento [restaurant] when
-  * Check order from a date:
-    bento what [date|today|yesterday]
-  * Add new restaurant to bucket list:
-    bento [restaurant] want
-  * Get restaurants from bucket list:
-    bento what
-  * Get restaurants from keyword:
-    bento what [keyword]
-  * Get total spent on all bentos:
-    bento total
-  * Pick one restaurant from bucket list:
-    bento pick
+  # usage = """Usage as follows:
+  # * First token can be 'bento' or '便當'
+  # * New bento entry:
+  #   bento [restaurant] [date|today|yesterday] [price] [items]
+  # * Check order history from a restaurant:
+  #   bento [restaurant]
+  # * Check last order from a restrant:
+  #   bento [restaurant] when
+  # * Check order from a date:
+  #   bento what [date|today|yesterday]
+  # * Add new restaurant to bucket list:
+  #   bento [restaurant] want
+  # * Get restaurants from bucket list:
+  #   bento what
+  # * Get restaurants from keyword:
+  #   bento what [keyword]
+  # * Get total spent on all bentos:
+  #   bento total
+  # * Pick one restaurant from bucket list:
+  #   bento pick
+  # """
+  usage = """
+  🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
+  🍱 查詢餐廳訂單：便當 [餐廳]
+  🍱 查詢某日便當：便當 what [日期|今天|昨天]
+  🍱 加新餐廳：便當 [餐廳] want
+  🍱 查詢：便當 what [關鍵字]
   """
   messages = TextSendMessage(
     text=usage, quick_reply=QuickReply(items=[
