@@ -274,7 +274,9 @@ def handle_message(event):
   restaurant_id = get_or_create_restaurant(restaurant)
   order_date = option
   if option.lower() == 'today' or option == '今天':
-    order_date = datetime.now()
+    order_date = datetime.today()
+  if option.lower() == 'yesterday' or option == '昨天':
+    order_date = datetime.today() - timedelta(days=1)
   if token_count == 3:
     new_bento(user_id, restaurant_id, order_date, room_id)
   else: # with price and/or items
@@ -297,13 +299,13 @@ def get_usage():
   return """Usage as follows:
   * First token can be 'bento' or '便當'
   * New bento entry:
-    bento [restaurant] [date] [price] [items]
+    bento [restaurant] [date|today|yesterday] [price] [items]
   * Check order history from a restaurant:
     bento [restaurant]
   * Check last order from a restrant:
     bento [restaurant] when
   * Check order from a date:
-    bento what [date]
+    bento what [date|today|yesterday]
   * Add new restaurant to bucket list:
     bento [restaurant] want
   * Get restaurants from bucket list:
