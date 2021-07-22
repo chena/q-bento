@@ -180,17 +180,12 @@ def handle_message(event):
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(bento_cards):
-        columns = map(lambda b: CarouselColumn(
-          thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
-          title=b[3].strftime("%m/%d"),
-          text='{} (${})'.format('' if not b[4] else b[4], b[1]),
-          actions=[
-            URIAction(label='放大', uri='{}images/{}'.format(APP_URL, b[0])), 
-            URIAction(label='Order Again', uri=b[5]) if b[5] else None
-        ]), bento_cards)
-        image_messages = TemplateSendMessage(
-          alt_text='bento',
-          template=CarouselTemplate(columns=list(columns))
+        image_messages = generate_bento_carousel(map(lambda b: {
+          'img': '{}images/{}'.format(APP_URL, b[0]),
+          'title': b[3].strftime("%m/%d"),
+          'text': '{} (${})'.format('' if not b[4] else b[4], b[1]),
+          'url': b[5]
+          }, bento_cards)
         )
         messages.append(image_messages)
       return line_bot_api.reply_message(reply_token, messages)
@@ -235,20 +230,15 @@ def handle_message(event):
         bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
         messages = [TextSendMessage(text=reply_msg)]
         if len(bento_cards):
-          columns = map(lambda b: CarouselColumn(
-            thumbnail_image_url='{}images/{}'.format(APP_URL, b[0]),
-            title=b[3],
-            text='{} (${})'.format('' if not b[4] else b[4], b[1]),
-            actions=[
-              URIAction(label='放大', uri='{}images/{}'.format(APP_URL, b[0])), 
-              URIAction(label='Order Again', uri=b[5]) if b[5] else None
-          ]), bento_cards)
-          image_messages = TemplateSendMessage(
-            alt_text='bento',
-            template=CarouselTemplate(columns=list(columns))
+          image_messages =  generate_bento_carousel(map(lambda b: {
+            'img': '{}images/{}'.format(APP_URL, b[0]),
+            'title': b[3],
+            'text': '{} (${})'.format('' if not b[4] else b[4], b[1]),
+            'url': b[5]
+            }, bento_cards)
           )
           messages.append(image_messages)
-          return line_bot_api.reply_message(reply_token, messages)
+        return line_bot_api.reply_message(reply_token, messages)
       except ValueError as e:
         print('ERROR', e)
         # find restaurants from keywords
@@ -294,6 +284,20 @@ def handle_message(event):
     new_bento(user_id, restaurant_id, order_date, price, items, room_id)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
+def generate_bento_carousel(bentos):
+  columns = map(lambda card: CarouselColumn(
+    thumbnail_image_url=card['img'],
+    title=card['title'],
+    text=card['text'],
+    actions=[
+      URIAction(label='放大', uri=card['img']),
+      URIAction(label='Order Again', uri=card['url']) if card['url'] else None
+    ]
+  ), bentos)
+  return TemplateSendMessage(
+    alt_text='bento',
+    template=CarouselTemplate(columns=list(columns))
+  )
 
 def print_usage(reply_token):
   # usage = """Usage as follows:
