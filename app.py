@@ -410,7 +410,7 @@ def get_or_create_restaurant(name, cat=None):
   if found_rest:
     return found_rest
   else:
-    new_restaurant(name, cat)
+    new_restaurant(name, cat=cat)
     return find_restaurant(name)
 
 def get_or_create_user(line_id):
