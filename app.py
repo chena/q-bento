@@ -150,7 +150,7 @@ def handle_message(event):
     if first_token in categories:
       # record new record
       cat, restaurant, date, price, items = tokens
-      return new_entry(user_id, room_id, restaurant, date, price, items, cat)
+      return new_entry(user_id, room_id, restaurant, date, [price]+[items], cat)
     return bot_reply(reply_token, response)
     
   if token_count == 1:
@@ -294,7 +294,8 @@ def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None)
     else:
       items = ','.join(other_info)
     new_bento(user_id, restaurant_id, order_date, price, items, room_id)
-  return bot_reply(reply_token, '防疫便當完成登記🍱✅')
+  msg = '防疫便當完成登記🍱✅' if not cat else '完成登記✅'
+  return bot_reply(reply_token, msg)
 
 def generate_bento_carousel(bentos):
   columns = map(lambda card: CarouselColumn(
