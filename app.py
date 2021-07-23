@@ -295,7 +295,7 @@ def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None)
       items = ','.join(other_info)
     if cat:
       sql = """
-        INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id, cat) 
+        INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id, category) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
       """
       __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id, cat))
