@@ -280,7 +280,8 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   elif order_date.lower() in ['yesterday','昨天']:
     order_date = datetime.today() - timedelta(days=1)
   
-  if not len(other_info):
+  print('OTHER INFO', other_info)
+  if len(other_info) == 0:
     new_bento(user_id, restaurant_id, order_date, room_id)
   else:
     items = None
