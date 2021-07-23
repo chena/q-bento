@@ -291,7 +291,7 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
         price = int(other_info[0])
       except:
         price = int(other_info[0][1:])
-      if len(other_info) > 2:
+      if len(other_info) > 1:
         items = ','.join(tokens[1:])
     else:
       items = ','.join(other_info)
