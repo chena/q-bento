@@ -268,10 +268,11 @@ def handle_message(event):
         return bot_reply(reply_token, 'Bento image from {} uploaded! 📸'.format(restaurant))
 
   # support more than 3 tokens
+  restaurant_id = get_or_create_restaurant(restaurant)
   if token_count == 3:
-    return new_entry(user_id, room_id, restaurant, option)
+    return new_entry(user_id, room_id, restaurant_id, option)
   else: # with price and/or items
-    return new_entry(user_id, room_id, restaurant, option, tokens[3:])
+    return new_entry(user_id, room_id, restaurant_id, option, tokens[3:])
   
 def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   if order_date.lower() in ['today', '今天']:
