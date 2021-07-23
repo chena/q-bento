@@ -151,7 +151,7 @@ def handle_message(event):
       # record new record
       cat, restaurant, date, price, items = tokens
       restaurant_id = get_or_create_restaurant(restaurant, cat)
-      return new_entry(user_id, room_id, restaurant_id, date, [price]+[items], cat)
+      return new_entry(user_id, room_id, restaurant_id, date, [price]+[items])
     return bot_reply(reply_token, response)
     
   if token_count == 1:
