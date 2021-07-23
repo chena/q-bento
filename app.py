@@ -150,6 +150,7 @@ def handle_message(event):
     if first_token in categories:
       # record new record
       cat, restaurant, date, price, items = tokens
+      print('TOKENS', tokens)
       return new_entry(user_id, room_id, restaurant, date, [price]+[items], cat)
     return bot_reply(reply_token, response)
     
