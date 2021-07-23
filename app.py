@@ -145,6 +145,12 @@ def handle_message(event):
       if r:
         return bot_reply(reply_token, 'Thanks for sharing, {} info updated'.format(restaurant))
       return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list 😋'.format(restaurant))
+    # check categories
+    categories = [r[0] for r in get_categories()]
+    if first_token in categories:
+      # record new record
+      cat, restaurant, date, price, items = tokens
+      return new_entry(user_id, room_id, restaurant, date, price, items, cat)
     return bot_reply(reply_token, response)
     
   if token_count == 1:
@@ -261,26 +267,32 @@ def handle_message(event):
         return bot_reply(reply_token, 'Bento image from {} uploaded! 📸'.format(restaurant))
 
   # support more than 3 tokens
-  restaurant_id = get_or_create_restaurant(restaurant)
-  order_date = option
-  if option.lower() == 'today' or option == '今天':
-    order_date = datetime.today()
-  if option.lower() == 'yesterday' or option == '昨天':
-    order_date = datetime.today() - timedelta(days=1)
   if token_count == 3:
-    new_bento(user_id, restaurant_id, order_date, room_id)
+    return new_entry(user_id, room_id, restaurant, option)
   else: # with price and/or items
+    return new_entry(user_id, room_id, restaurant, option, tokens[3:])
+  
+def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None):
+  restaurant_id = get_or_create_restaurant(restaurant)
+  if order_date.lower() in ['today', '今天']:
+    order_date = datetime.today()
+  if order_date.lower() in ['yesterday','昨天']:
+    order_date = datetime.today() - timedelta(days=1)
+  
+  if len(items) == 0 and not price:
+    new_bento(user_id, restaurant_id, order_date, room_id)
+  else:
     items = None
     price = None
-    if tokens[3].isdigit() or tokens[3][0] == '$':
+    if other_info[0].isdigit() or other_info[0][0] == '$':
       try:
-        price = int(tokens[3])
+        price = int(other_info[0])
       except:
-        price = int(tokens[3][1:])
-      if token_count > 4:
-        items = ','.join(tokens[4:])
+        price = int(other_info[0][1:])
+      if len(other_info) > 2:
+        items = ','.join(tokens[1:])
     else:
-      items = ','.join(tokens[3:])
+      items = ','.join(other_info)
     new_bento(user_id, restaurant_id, order_date, price, items, room_id)
   return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
@@ -321,8 +333,7 @@ def print_usage(reply_token):
   # * Pick one restaurant from bucket list:
   #   bento pick
   # """
-  usage = """
-  🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
+  usage = """🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
   🍱 查詢餐廳訂單：便當 [餐廳]
   🍱 查詢某日便當：便當 吃什麼 [日期|今天|昨天]
   🍱 加新餐廳：便當 [餐廳] 想吃
@@ -365,6 +376,9 @@ def check_last_order(restaurant):
     LIMIT 1;
   """
   return __get_all(sql, (name,))
+
+def get_categories():
+  return __get_all('SELECT DISTINCT category FROM restaurants WHERE category NOTNULL;', ())
 
 def get_bento_from_date(order_date):
   sql = """
