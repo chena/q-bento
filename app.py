@@ -49,7 +49,7 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='30')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='0')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime(DATE_FORMAT) != str(last_bento_date):
@@ -151,7 +151,7 @@ def handle_message(event):
     return print_usage(reply_token)
   if token_count == 2:
     second_token = tokens[1]
-    if second_token == 'what':
+    if second_token in ['what', '吃什麼']:
       bucket_list = [r[0] for r in get_bucket_list()]
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     elif second_token == 'pick' or second_token == '選':
@@ -192,23 +192,23 @@ def handle_message(event):
 
   restaurant, option = tokens[1:3]
   if token_count == 3:
-  # check last order date
-    if option.lower() == 'when':
-      last_order = check_last_order(restaurant)
-      if last_order:
-        last_time, items, price, bento_id, bento_image = last_order[0]
-        reply_msg = 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price)
-        if not bento_image:
-          return bot_reply(reply_token, reply_msg)
-        image_url = '{}images/{}'.format(APP_URL, bento_id)
-        return line_bot_api.reply_message(reply_token, [
-          TextSendMessage(text=reply_msg),
-          ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
-        ])
-      else:
-        return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
+    # check last order date
+    # if option.lower() == 'when':
+    #   last_order = check_last_order(restaurant)
+    #   if last_order:
+    #     last_time, items, price, bento_id, bento_image = last_order[0]
+    #     reply_msg = 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price)
+    #     if not bento_image:
+    #       return bot_reply(reply_token, reply_msg)
+    #     image_url = '{}images/{}'.format(APP_URL, bento_id)
+    #     return line_bot_api.reply_message(reply_token, [
+    #       TextSendMessage(text=reply_msg),
+    #       ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
+    #     ])
+    #   else:
+    #     return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
 
-    if restaurant == 'what':
+    if restaurant in ['what', '吃什麼']:
       # check if third token is a date
       today = datetime.today()
       try:
@@ -324,9 +324,9 @@ def print_usage(reply_token):
   usage = """
   🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
   🍱 查詢餐廳訂單：便當 [餐廳]
-  🍱 查詢某日便當：便當 what [日期|今天|昨天]
-  🍱 加新餐廳：便當 [餐廳] want
-  🍱 查詢：便當 what [關鍵字]
+  🍱 查詢某日便當：便當 吃什麼 [日期|今天|昨天]
+  🍱 加新餐廳：便當 [餐廳] 想吃
+  🍱 查詢：便當 吃什麼 [關鍵字]
   """
   messages = TextSendMessage(
     text=usage, quick_reply=QuickReply(items=[
