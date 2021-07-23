@@ -150,7 +150,8 @@ def handle_message(event):
     if first_token in categories:
       # record new record
       cat, restaurant, date, price, items = tokens
-      return new_entry(user_id, room_id, restaurant, date, [price]+[items], cat)
+      restaurant_id = get_or_create_restaurant(restaurant, cat)
+      return new_entry(user_id, room_id, restaurant_id, date, [price]+[items], cat)
     return bot_reply(reply_token, response)
     
   if token_count == 1:
@@ -272,8 +273,7 @@ def handle_message(event):
   else: # with price and/or items
     return new_entry(user_id, room_id, restaurant, option, tokens[3:])
   
-def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None):
-  restaurant_id = get_or_create_restaurant(restaurant)
+def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   if order_date.lower() in ['today', '今天']:
     order_date = datetime.today()
   elif order_date.lower() in ['yesterday','昨天']:
@@ -293,16 +293,8 @@ def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None)
         items = ','.join(tokens[1:])
     else:
       items = ','.join(other_info)
-    if cat:
-      sql = """
-        INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id, category) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-      """
-      __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id, cat))
-    else:
-      new_bento(user_id, restaurant_id, order_date, price, items, room_id)
-  msg = '防疫便當完成登記🍱✅' if not cat else '完成登記✅'
-  return bot_reply(reply_token, msg)
+    new_bento(user_id, restaurant_id, order_date, price, items, room_id)
+  return bot_reply(reply_token, '防疫便當完成登記🍱✅')
 
 def generate_bento_carousel(bentos):
   columns = map(lambda card: CarouselColumn(
@@ -412,12 +404,12 @@ def get_bento_count():
   """
   return __get_first_row(sql, ())
 
-def get_or_create_restaurant(name):
+def get_or_create_restaurant(name, cat=None):
   found_rest = find_restaurant(name)
   if found_rest:
     return found_rest
   else:
-    new_restaurant(name)
+    new_restaurant(name, cat)
     return find_restaurant(name)
 
 def get_or_create_user(line_id):
@@ -490,7 +482,7 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_i
     """
     __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id))
 
-def new_restaurant(name, url=None, phone=None):
+def new_restaurant(name, url=None, phone=None, cat=None):
   r = find_restaurant(name)
   if r:
     __insert_or_update("""
@@ -499,9 +491,9 @@ def new_restaurant(name, url=None, phone=None):
     return True
   else:
     __insert_or_update("""
-      INSERT INTO restaurants (name, url, phone, created_at) 
-      VALUES (%s, %s, %s, %s);
-      """, (name, url, phone, datetime.now()))
+      INSERT INTO restaurants (name, url, phone, created_at, category) 
+      VALUES (%s, %s, %s, %s, %s);
+      """, (name, url, phone, datetime.now(), cat))
     return False
 
 def __insert_or_update(sql, param):
