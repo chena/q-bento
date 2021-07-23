@@ -292,7 +292,7 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
       except:
         price = int(other_info[0][1:])
       if len(other_info) > 1:
-        items = ','.join(tokens[1:])
+        items = ','.join(other_info[1:])
     else:
       items = ','.join(other_info)
     new_bento(user_id, restaurant_id, order_date, price, items, room_id)
