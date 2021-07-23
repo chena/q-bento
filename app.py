@@ -150,7 +150,6 @@ def handle_message(event):
     if first_token in categories:
       # record new record
       cat, restaurant, date, price, items = tokens
-      print('TOKENS', tokens)
       return new_entry(user_id, room_id, restaurant, date, [price]+[items], cat)
     return bot_reply(reply_token, response)
     
@@ -277,7 +276,7 @@ def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None)
   restaurant_id = get_or_create_restaurant(restaurant)
   if order_date.lower() in ['today', '今天']:
     order_date = datetime.today()
-  if order_date.lower() in ['yesterday','昨天']:
+  elif order_date.lower() in ['yesterday','昨天']:
     order_date = datetime.today() - timedelta(days=1)
   
   if len(items) == 0 and not price:
@@ -294,7 +293,14 @@ def new_entry(user_id, room_id, restaurant, order_date, other_info=[], cat=None)
         items = ','.join(tokens[1:])
     else:
       items = ','.join(other_info)
-    new_bento(user_id, restaurant_id, order_date, price, items, room_id)
+    if cat:
+      sql = """
+        INSERT INTO bentos (user_id, restaurant_id, order_date, created_at, price, items, room_id, cat) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+      """
+      __insert_or_update(sql, (user_id, restaurant_id, order_date, datetime.now(), price, items, room_id, cat))
+    else:
+      new_bento(user_id, restaurant_id, order_date, price, items, room_id)
   msg = '防疫便當完成登記🍱✅' if not cat else '完成登記✅'
   return bot_reply(reply_token, msg)
 
