@@ -463,7 +463,7 @@ def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_i
   last_order_sql = """
     SELECT b.id 
     FROM bentos b 
-    WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s) AND (price = %s || items = %s)
+    WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s) AND (price = %s OR items = %s)
     LIMIT 1;
   """
   last_order = __get_first_row(last_order_sql, (restaurant_id, order_date, items, price))
