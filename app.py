@@ -129,7 +129,7 @@ def handle_message(event):
   user_id = get_or_create_user(source.user_id)
 
   if not (first_token.startswith('bento') or first_token.startswith('便當')):
-    # detect URL shared from google map with restaurant name info
+    # 1. detect URL shared from google map with restaurant name info
     if 'https://maps' in response and not tokens[0].startswith('https'):
       lines = message.split('\n')
       restaurant = lines[0]
@@ -145,7 +145,7 @@ def handle_message(event):
       if r:
         return bot_reply(reply_token, 'Thanks for sharing, {} info updated'.format(restaurant))
       return bot_reply(reply_token, 'Thanks for sharing, {} added to your bucket list 😋'.format(restaurant))
-    # check categories
+    # 2. check categories
     categories = [r[0] for r in get_categories()]
     if first_token in categories:
       # record new record
@@ -155,11 +155,13 @@ def handle_message(event):
     return bot_reply(reply_token, response)
     
   if token_count == 1:
+    # 3. get usage
     return print_usage(reply_token)
   if token_count == 2:
     second_token = tokens[1]
     if second_token in ['what', '吃什麼']:
       bucket_list = [r[0] for r in get_bucket_list()]
+      # 4. get bucket list
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
     elif second_token == 'pick' or second_token == '選':
       name, phone, link, tabetai = pick_restaurant()
@@ -170,14 +172,17 @@ def handle_message(event):
         reply += '\n🔗 {}'.format(link)
       if tabetai:
         reply += '\n👍 {}'.format(tabetai)
+        # 5. pick restaurant
       return bot_reply(reply_token, reply)
     elif second_token == 'old':
       old_bentos = [r[0] for r in get_old_bentos()]
+      # 6. get old restaurants
       return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(old_bentos)))
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
       avg = round(total/bento_count)
+      # 7. get total and avg spending
       return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average)🤑'.format(total, bento_count, avg)) 
     else: # check history
       bentos = get_bentos(second_token)
@@ -190,11 +195,12 @@ def handle_message(event):
         image_messages = generate_bento_carousel(map(lambda b: {
           'img': '{}images/{}'.format(APP_URL, b[0]),
           'title': b[3].strftime("%m/%d"),
-          'text': '{} (${})'.format('' if not b[4] else b[4], b[1]),
+          'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
           'url': b[5]
           }, bento_cards)
         )
         messages.append(image_messages)
+      # 8. get bento history from restaurant
       return line_bot_api.reply_message(reply_token, messages)
 
   restaurant, option = tokens[1:3]
@@ -231,6 +237,7 @@ def handle_message(event):
           formatted_date = order_date.strftime("%m/%d")
         bentos = get_bento_from_date(order_date)
         if not len(bentos):
+          # 9. get bento from date
           return bot_reply(reply_token, 'No order from {}'.format(formatted_date))
         restaurants = [b[3] for b in bentos]
         reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
@@ -240,7 +247,7 @@ def handle_message(event):
           image_messages =  generate_bento_carousel(map(lambda b: {
             'img': '{}images/{}'.format(APP_URL, b[0]),
             'title': b[3],
-            'text': '{} (${})'.format('' if not b[4] else b[4], b[1]),
+            'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
             'url': b[5]
             }, bento_cards)
           )
@@ -248,7 +255,7 @@ def handle_message(event):
         return line_bot_api.reply_message(reply_token, messages)
       except ValueError as e:
         print('ERROR', e)
-        # find restaurants from keywords
+        # 10. find restaurants from keywords
         found_restaurants = [r[0] for r in from_keywords(option)]
         if len(found_restaurants) > 0:
           return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
@@ -257,6 +264,7 @@ def handle_message(event):
     # add restaurant to list
     if option.lower() == 'want' or option == '想吃':
       new_restaurant(restaurant)
+      # 11. add new restaurant
       return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
     # add image to bento
     if option.startswith('https:'):
@@ -265,9 +273,10 @@ def handle_message(event):
         last_order = check_last_order(restaurant)
         bento_id = last_order[0][3]
         __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
+        # 12. upload bento image
         return bot_reply(reply_token, 'Bento image from {} uploaded! 📸'.format(restaurant))
 
-  # support more than 3 tokens
+  # 13. support more than 3 tokens - new bento entry
   restaurant_id = get_or_create_restaurant(restaurant)
   if token_count == 3:
     return new_entry(user_id, room_id, restaurant_id, option)
@@ -280,12 +289,11 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   elif order_date.lower() in ['yesterday','昨天']:
     order_date = datetime.today() - timedelta(days=1)
   
-  print('OTHER INFO', other_info)
   if len(other_info) == 0:
     new_bento(user_id, restaurant_id, order_date, room_id)
   else:
     items = None
-    price = None
+    price = 0
     if other_info[0].isdigit() or other_info[0][0] == '$':
       try:
         price = int(other_info[0])
