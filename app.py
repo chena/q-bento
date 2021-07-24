@@ -205,22 +205,6 @@ def handle_message(event):
 
   restaurant, option = tokens[1:3]
   if token_count == 3:
-    # check last order date
-    # if option.lower() == 'when':
-    #   last_order = check_last_order(restaurant)
-    #   if last_order:
-    #     last_time, items, price, bento_id, bento_image = last_order[0]
-    #     reply_msg = 'Your most recent order from {} was on {}: {} (${})'.format(restaurant, last_time.strftime("%m/%d"), items, price)
-    #     if not bento_image:
-    #       return bot_reply(reply_token, reply_msg)
-    #     image_url = '{}images/{}'.format(APP_URL, bento_id)
-    #     return line_bot_api.reply_message(reply_token, [
-    #       TextSendMessage(text=reply_msg),
-    #       ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
-    #     ])
-    #   else:
-    #     return bot_reply(reply_token, 'No order found from {}'.format(restaurant))
-
     if restaurant in ['what', '吃什麼']:
       # check if third token is a date
       today = datetime.today()
@@ -279,9 +263,9 @@ def handle_message(event):
   # 13. support more than 3 tokens - new bento entry
   restaurant_id = get_or_create_restaurant(restaurant)
   if token_count == 3:
-    return new_entry(user_id, room_id, restaurant_id, option)
+    return bot_reply(reply_token, new_entry(user_id, room_id, restaurant_id, option))
   else: # with price and/or items
-    return new_entry(user_id, room_id, restaurant_id, option, tokens[3:])
+    return bot_reply(reply_token, new_entry(user_id, room_id, restaurant_id, option, tokens[3:]))
   
 def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   if order_date.lower() in ['today', '今天']:
@@ -478,10 +462,11 @@ def new_user(line_id, name=None):
 def new_bento(user_id, restaurant_id, order_date, price=None, items=None, room_id=None):
   last_order_sql = """
     SELECT b.id 
-    FROM bentos b WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s)
+    FROM bentos b 
+    WHERE b.restaurant_id = %s AND date(b.order_date) = date(%s) AND (price = %s || items = %s)
     LIMIT 1;
   """
-  last_order = __get_first_row(last_order_sql, (restaurant_id, order_date))
+  last_order = __get_first_row(last_order_sql, (restaurant_id, order_date, items, price))
   # update if record exists
   if last_order:
     __insert_or_update("UPDATE bentos SET items = %s, price = %s WHERE id = %s", (items, price, last_order))
