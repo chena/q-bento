@@ -8,6 +8,7 @@ import random
 import requests
 import time
 from flask_apscheduler import APScheduler
+import metadata_parser
 
 from linebot import (
   LineBotApi, WebhookHandler
@@ -160,19 +161,22 @@ def handle_message(event):
   if token_count == 2:
     second_token = tokens[1]
     if second_token in ['what', '吃什麼']:
-      bucket_list = [r[0] for r in get_bucket_list()]
-      # 4. get bucket list
-      return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(bucket_list)))
+      # 4. get bucket list as carousel columns
+      bucket_list = get_bucket_list()
+      rest_options = list(filter(None, [r if r[2] else None for r in bucket_list]))
+      messages = [TextSendMessage(text='Some options for you: {}'.format(', '.join([r[0] for r in bucket_list])))]
+      image_messages = generate_carousel(map(lambda b: {
+        'img': metadata_parser.MetadataParser(search_head_only=True, url=b[2]).get_metadata_link('image'),
+        'title': b[0],
+        'text': generate_rest_info(b[0], b[1], b[2], b[3], include=['phone', 'tabetai']),
+        'url': b[2]
+        }, rest_options)
+      )
+      messages.append(image_messages)
+      return line_bot_api.reply_message(reply_token, messages)
     elif second_token == 'pick' or second_token == '選':
       name, phone, link, tabetai = pick_restaurant()
-      reply = '🍱 {}'.format(name)
-      if phone:
-        reply += '\n☎️ {}'.format(phone)
-      if link:
-        reply += '\n🔗 {}'.format(link)
-      if tabetai:
-        reply += '\n👍 {}'.format(tabetai)
-        # 5. pick restaurant
+      reply = generate_rest_info(name, phone, link, tabetai)
       return bot_reply(reply_token, reply)
     elif second_token == 'old':
       old_bentos = [r[0] for r in get_old_bentos()]
@@ -192,7 +196,7 @@ def handle_message(event):
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       if len(bento_cards):
-        image_messages = generate_bento_carousel(map(lambda b: {
+        image_messages = generate_carousel(map(lambda b: {
           'img': '{}images/{}'.format(APP_URL, b[0]),
           'title': b[3].strftime("%m/%d"),
           'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
@@ -228,7 +232,7 @@ def handle_message(event):
         bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
         messages = [TextSendMessage(text=reply_msg)]
         if len(bento_cards):
-          image_messages =  generate_bento_carousel(map(lambda b: {
+          image_messages =  generate_carousel(map(lambda b: {
             'img': '{}images/{}'.format(APP_URL, b[0]),
             'title': b[3],
             'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
@@ -290,20 +294,31 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
     new_bento(user_id, restaurant_id, order_date, price, items, room_id)
   return '防疫便當完成登記🍱✅'
 
-def generate_bento_carousel(bentos):
+def generate_carousel(bentos):
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
     text=card['text'],
     actions=[
-      URIAction(label='放大', uri=card['img']),
-      URIAction(label='Order Again', uri=card['url']) if card['url'] else None
+      URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
+      URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
   return TemplateSendMessage(
     alt_text='bento',
     template=CarouselTemplate(columns=list(columns))
   )
+
+def generate_rest_info(name, phone=None, link=None, tabetai=None, include=[]):
+  include_all = not len(include)
+  info = '🍱 {}'.format(name) if include_all else ''
+  if phone and (include_all or 'phone' in include):
+    info += '\n☎️ {}'.format(phone)
+  if link and (include_all or 'link' in include):
+    info += '\n🔗 {}'.format(link)
+  if tabetai and (include_all or 'tabetai' in include):
+    info += '\n👍 {}'.format(tabetai)
+  return info
 
 def print_usage(reply_token):
   # usage = """Usage as follows:
