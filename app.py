@@ -178,10 +178,21 @@ def handle_message(event):
       name, phone, link, tabetai = pick_restaurant()
       reply = generate_rest_info(name, phone, link, tabetai)
       return bot_reply(reply_token, reply)
-    elif second_token == 'old':
-      old_bentos = [r[0] for r in get_old_bentos()]
+    elif second_token == 'old' or second_token == '久違':
+      old_bentos = get_old_bentos()
+      bento_cards = list(filter(None, [b if b[5] else None for b in old_bentos]))
       # 6. get old restaurants
-      return bot_reply(reply_token, 'Some options for you: {}'.format(', '.join(old_bentos)))
+      messages = [TextSendMessage(text='Some options for you: {}'.format(', '.join([r[0] for r in old_bentos])))]
+      if len(bento_cards):
+        image_messages = generate_carousel(map(lambda b: {
+          'img': '{}images/{}'.format(APP_URL, b[1]),
+          'title': '{}: {}'.format(b[0], b[3].strftime("%m/%d")),
+          'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[2]) if b[2] else ''),
+          'url': b[5]
+          }, bento_cards)
+        )
+      messages.append(image_messages)
+      return line_bot_api.reply_message(reply_token, messages)
     elif second_token == 'total' or second_token == '合計':
       total = __get_first_row('SELECT SUM(price) FROM bentos;', ())
       bento_count = get_bento_count()
@@ -387,6 +398,16 @@ def get_bentos(restaurant, room_id=None):
   """
   return __get_all(sql, (name,))
 
+def get_old_bentos():
+  sql = """
+    SELECT r.name, MAX(b.id), MAX(b.price), MAX(b.order_date) AS odate, MAX(b.items), MAX(r.url)
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE r.dame IS NOT true AND r.available IS NOT false AND b.image NOTNULL
+    GROUP BY r.name ORDER BY odate
+    LIMIT 3;
+  """
+  return __get_all(sql, ())
+
 def get_bento_count():
   sql = """
     SELECT COUNT(*) FROM bentos b;
@@ -437,16 +458,6 @@ def get_bento_image(bento_id):
   return __get_first_row("""
     SELECT image FROM bentos WHERE id = %s
   """, (str(bento_id),))
-
-def get_old_bentos():
-  sql = """
-    SELECT r.name , MAX(b.order_date) AS odate
-    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
-    WHERE r.dame IS NOT true AND r.available IS NOT false
-    GROUP BY r.name ORDER BY odate
-    LIMIT 3;
-  """
-  return __get_all(sql, ())
 
 def new_user(line_id, name=None):
   __insert_or_update("""
