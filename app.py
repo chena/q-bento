@@ -244,9 +244,9 @@ def handle_message(event):
       except ValueError as e:
         print('ERROR', e)
         # 10. find restaurants from keywords
-        found_restaurants = [r[0] for r in from_keywords(option)]
+        found_restaurants = [generate_rest_info(b[0], b[1], b[2], b[3]) for b in from_keywords(option)]
         if len(found_restaurants) > 0:
-          return bot_reply(reply_token, 'Some {} options for you: {}'.format(option, ', '.join(found_restaurants)))
+          return bot_reply(reply_token, 'Some {} options for you:\n {}'.format(option, '\n\n'.join(found_restaurants)))
         else:
           return bot_reply(reply_token, 'Sorry, no match found 😥')
     # add restaurant to list
@@ -321,7 +321,7 @@ def generate_rest_info(name, phone=None, link=None, tabetai=None, include=[]):
   return info
 
 def print_usage(reply_token):
-  usage = """ 🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
+  usage = """  🍱 登記新便當：便當 [餐廳] [日期|今天|昨天] [價錢] [餐點]
   🍱 查詢餐廳訂單：便當 [餐廳]
   🍱 查詢某日便當：便當 吃什麼 [日期|今天|昨天]
   🍱 新加餐廳：便當 [餐廳] 想吃
@@ -330,7 +330,7 @@ def print_usage(reply_token):
   messages = TextSendMessage(
     text=usage, quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label="防疫便當花了多少錢呢？💰", text="bento total")),
-      QuickReplyButton(action=MessageAction(label="昨天吃什麼？🍱", text="bento old")),
+      QuickReplyButton(action=MessageAction(label="昨天吃什麼？🍱", text="bento what yesterday")),
       QuickReplyButton(action=MessageAction(label="今天要吃什麼呢？😋", text="bento pick")),
       QuickReplyButton(action=MessageAction(label="看看想吃清單❤️", text="bento what"))
     ])
@@ -347,9 +347,10 @@ def pick_restaurant():
 
 def from_keywords(keyword):
   sql = """
-    SELECT DISTINCT(r.name) FROM restaurants r
+    SELECT MAX(r.name), MAX(r.phone), MAX(r.url), MAX(r.tabetai) FROM restaurants r
     JOIN bentos b ON b.restaurant_id = r.id
-    WHERE r.name LIKE %s ESCAPE '' OR b.items LIKE %s ESCAPE '' OR r.tabetai LIKE %s ESCAPE '';
+    WHERE r.name LIKE %s ESCAPE '' OR b.items LIKE %s ESCAPE '' OR r.tabetai LIKE %s ESCAPE ''
+    GROUP BY r.id;
   """
   keyword = '%{}%'.format(keyword)
   return __get_all(sql, (keyword, keyword, keyword))
