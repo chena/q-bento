@@ -68,12 +68,6 @@ def morning_push():
     ])
   ))
 
-@scheduler.task('cron', id='test_push', hour='7', minute='12')
-def test_push():
-  line_bot_api.push_message(os.environ['LINE_USER_ID'], TextSendMessage(text='TEST TEST'))
-
-# scheduler.add_job(test_push, 'cron', hour='8', minute='3')
-
 @app.route('/callback', methods=['POST'])
 def callback():
   # get X-Line-Signature header value
@@ -394,7 +388,8 @@ def get_bentos(restaurant, room_id=None):
     SELECT b.id, b.price, b.image, b.order_date, b.items, r.url 
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name LIKE %s ESCAPE ''
-    ORDER BY order_date DESC;
+    ORDER BY order_date DESC
+    LIMIT 10;
   """
   return __get_all(sql, (name,))
 
