@@ -172,8 +172,9 @@ def handle_message(event):
       name, phone, link, tabetai = pick_restaurant()
       reply = generate_rest_info(name, phone, link, tabetai)
       return bot_reply(reply_token, reply)
-    elif second_token == 'old' or second_token == '久違':
-      old_bentos = get_old_bentos()
+    elif second_token in ['old', 'again', '久違', '再吃一次']:
+      again = second_token in ['again', '再吃一次']
+      old_bentos = get_old_bentos(again)
       bento_cards = list(filter(None, [b if b[5] else None for b in old_bentos]))
       # 6. get old restaurants
       messages = [TextSendMessage(text='Some options for you: {}'.format(', '.join([r[0] for r in old_bentos])))]
@@ -393,14 +394,17 @@ def get_bentos(restaurant, room_id=None):
   """
   return __get_all(sql, (name,))
 
-def get_old_bentos():
+def get_old_bentos(again=False):
   sql = """
-    SELECT r.name, MAX(b.id), MAX(b.price), MAX(b.order_date) AS odate, MAX(b.items), MAX(r.url)
+    SELECT r.name, MAX(b.id), MAX(b.price), MAX(b.order_date) AS odate, MAX(b.items), MAX(r.url), count(*) AS bcount
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.dame IS NOT true AND r.available IS NOT false AND b.image NOTNULL
-    GROUP BY r.name ORDER BY odate
-    LIMIT 3;
+    GROUP BY r.name 
   """
+  if again:
+    sql += ' ORDER BY bcount, odate LIMIT 3'
+  else:
+    sql += ' ORDER BY odate LIMIT 3;'
   return __get_all(sql, ())
 
 def get_bento_count():
