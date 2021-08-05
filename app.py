@@ -404,7 +404,8 @@ def get_old_bentos(again=False):
   if again:
     sql += ' ORDER BY bcount, odate LIMIT 3'
   else:
-    sql += ' ORDER BY odate LIMIT 3;'
+    sql += ' ORDER BY odate LIMIT 5;'
+  print('OLD BENTO SQL:', sql)
   return __get_all(sql, ())
 
 def get_bento_count():
