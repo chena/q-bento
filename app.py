@@ -199,12 +199,14 @@ def handle_message(event):
       freq = len(bentos)
       total = sum([r[1] for r in bentos])
       bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
-      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(second_token, freq, ('s' if freq > 1 else ''), total)
+      restaurants = set([b[6] for b in bentos])
+      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(restaurants.split(' and '), freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
+      incl_name = len(restaurants) > 1
       if len(bento_cards):
         image_messages = generate_carousel(map(lambda b: {
           'img': '{}images/{}'.format(APP_URL, b[0]),
-          'title': b[3].strftime("%m/%d"),
+          'title': b[3].strftime("%m/%d") + ' {}'.format(b[6]) if incl_name else '',
           'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
           'url': b[5]
           }, bento_cards)
@@ -386,7 +388,7 @@ def get_bento_from_date(order_date):
 def get_bentos(restaurant, room_id=None):
   name = '%{}%'.format(restaurant)
   sql = """
-    SELECT b.id, b.price, b.image, b.order_date, b.items, r.url 
+    SELECT b.id, b.price, b.image, b.order_date, b.items, r.url, r.name
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.name LIKE %s ESCAPE ''
     ORDER BY order_date DESC
@@ -402,10 +404,9 @@ def get_old_bentos(again=False):
     GROUP BY r.name 
   """
   if again:
-    sql += ' ORDER BY bcount, odate LIMIT 3'
+    sql += ' ORDER BY bcount, odate LIMIT 5'
   else:
     sql += ' ORDER BY odate LIMIT 5;'
-  print('OLD BENTO SQL:', sql)
   return __get_all(sql, ())
 
 def get_bento_count():
