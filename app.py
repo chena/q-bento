@@ -200,7 +200,7 @@ def handle_message(event):
       total = sum([r[1] for r in bentos])
       bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
       restaurants = set([b[6] for b in bentos])
-      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(restaurants.split(' and '), freq, ('s' if freq > 1 else ''), total)
+      reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(' and '.join(restaurants), freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       incl_name = len(restaurants) > 1
       if len(bento_cards):
