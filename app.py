@@ -206,7 +206,7 @@ def handle_message(event):
       if len(bento_cards):
         image_messages = generate_carousel(map(lambda b: {
           'img': '{}images/{}'.format(APP_URL, b[0]),
-          'title': b[3].strftime("%m/%d") + ' {}'.format(b[6]) if incl_name else '',
+          'title': b[3].strftime("%m/%d") + (' {}'.format(b[6]) if incl_name else ''),
           'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
           'url': b[5]
           }, bento_cards)
