@@ -203,7 +203,7 @@ def handle_message(event):
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(' and '.join(restaurants), freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       incl_name = len(restaurants) > 1
-      if len(bento_cards):
+      if len(bentos):
         image_messages = generate_carousel(map(lambda b: {
           'img': '{}images/{}'.format(APP_URL, b[0]) if b[2] else metadata_parser.MetadataParser(search_head_only=True, url=b[2]).get_metadata_link('image'),
           'title': b[3].strftime("%m/%d") + (' {}'.format(b[6]) if incl_name else ''),
