@@ -313,6 +313,7 @@ def generate_carousel(bentos):
       URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
+  print('COL', list(columns))
   return TemplateSendMessage(
     alt_text='bento',
     template=CarouselTemplate(columns=list(columns))
