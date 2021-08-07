@@ -198,14 +198,14 @@ def handle_message(event):
       bentos = get_bentos(second_token)
       freq = len(bentos)
       total = sum([r[1] for r in bentos])
-      bento_cards = list(filter(None, [b if b[2] or b[5] else None for b in bentos]))
+      bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
       restaurants = set([b[6] for b in bentos])
       reply_msg = 'You ordered from {} {} time{} during quarantine! (total ${})'.format(' and '.join(restaurants), freq, ('s' if freq > 1 else ''), total)
       messages = [TextSendMessage(text=reply_msg)]
       incl_name = len(restaurants) > 1
       if len(bento_cards):
         image_messages = generate_carousel(map(lambda b: {
-          'img': '{}images/{}'.format(APP_URL, b[0]) if b[2] else metadata_parser.MetadataParser(search_head_only=True, url=b[5]).get_metadata_link('image'),
+          'img': '{}images/{}'.format(APP_URL, b[0]),
           'title': b[3].strftime("%m/%d") + (' {}'.format(b[6]) if incl_name else ''),
           'text': '{}{}'.format('' if not b[4] else b[4], ' ${}'.format(b[1]) if b[1] else ''),
           'url': b[5]
@@ -303,14 +303,13 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   return '防疫便當完成登記🍱✅'
 
 def generate_carousel(bentos):
-  print('BENTOS', list(bentos))
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
     text=card['text'],
     actions=[
-      URIAction(label='放大', uri=card['img']),
-      URIAction(label='Order', uri=card['url'])
+      URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
+      URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
   return TemplateSendMessage(
