@@ -303,12 +303,13 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   return '防疫便當完成登記🍱✅'
 
 def generate_carousel(bentos):
+  print('BENTOS', list(bentos))
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
     text=card['text'],
     actions=[
-      URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
+      URIAction(label='放大', uri=card['img']),
       URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
