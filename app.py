@@ -309,11 +309,10 @@ def generate_carousel(bentos):
     title=card['title'],
     text=card['text'],
     actions=[
-      URIAction(label='放大', uri=card['img']),
+      URIAction(label='放大', uri=card['img']) if card['img'] else None,
       URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
-  print('COL', list(columns))
   return TemplateSendMessage(
     alt_text='bento',
     template=CarouselTemplate(columns=list(columns))
