@@ -290,11 +290,12 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   else:
     items = None
     price = 0
-    if other_info[0].isdigit() or other_info[0][0] == '$':
+    if other_info[0].lower() == 'free' or other_info[0].isdigit() or other_info[0][0] == '$':
       try:
         price = int(other_info[0])
       except:
-        price = int(other_info[0][1:])
+        if other_info[0].lower() != 'free':
+          price = int(other_info[0][1:])
       if len(other_info) > 1:
         items = ','.join(other_info[1:])
     else:
