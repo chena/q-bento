@@ -50,7 +50,7 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='0')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime(DATE_FORMAT) != str(last_bento_date):
