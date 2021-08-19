@@ -305,6 +305,7 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
 
 def generate_carousel(bentos):
   print(list(bentos))
+  print(len(bentos))
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
