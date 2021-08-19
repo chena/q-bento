@@ -50,7 +50,7 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='30')
 def lunch_push():
   last_bento_date = get_last_bento()[1]
   if datetime.now().strftime(DATE_FORMAT) != str(last_bento_date):
@@ -304,15 +304,13 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   return '防疫便當完成登記🍱✅'
 
 def generate_carousel(bentos):
-  print(list(bentos))
-  print(len(list(bentos)))
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
     text=card['text'],
     actions=[
-      URIAction(label='放大', uri=card['img']),
-      URIAction(label='Order', uri=card['url'])
+      URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
+      URIAction(label='Order', uri=card['url']) if card['url'] else None
     ]
   ), bentos)
   return TemplateSendMessage(
