@@ -304,6 +304,7 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   return '防疫便當完成登記🍱✅'
 
 def generate_carousel(bentos):
+  print(list(bentos))
   columns = map(lambda card: CarouselColumn(
     thumbnail_image_url=card['img'],
     title=card['title'],
