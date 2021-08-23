@@ -317,7 +317,7 @@ def generate_carousel(bentos):
     text=card['text'],
     actions=[
       URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
-      URIAction(label='Order', uri=card['url']) if card['url'] else APP_URL
+      URIAction(label='Order', uri=card['url'] if card['url'] else APP_URL)
     ]
   ), bentos)
   return TemplateSendMessage(
