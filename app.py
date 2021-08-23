@@ -68,6 +68,10 @@ def morning_push():
     ])
   ))
 
+@app.route('/', methods=['GET'])
+def home():
+  return 'HELLO! 今天要吃什麼呢？😋'
+
 @app.route('/callback', methods=['POST'])
 def callback():
   # get X-Line-Signature header value
@@ -313,7 +317,7 @@ def generate_carousel(bentos):
     text=card['text'],
     actions=[
       URIAction(label='放大', uri=card['img']) if APP_URL in card['img'] else None,
-      URIAction(label='Order', uri=card['url']) if card['url'] else None
+      URIAction(label='Order', uri=card['url']) if card['url'] else APP_URL
     ]
   ), bentos)
   return TemplateSendMessage(
