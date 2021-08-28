@@ -197,7 +197,7 @@ def handle_message(event):
       bento_count = get_bento_count()
       avg = round(total/bento_count)
       # 7. get total and avg spending
-      return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average)🤑'.format(total, bento_count, avg)) 
+      return bot_reply(reply_token, 'You have spent ${} in total on {} 🍱 during quarantine! (${} per day on average) 🤑'.format(total, bento_count, avg)) 
     else: # check history
       bentos = get_bentos(second_token)
       freq = len(bentos)
@@ -242,7 +242,7 @@ def handle_message(event):
         if not len(bentos):
           # 9. get bento from date
           return bot_reply(reply_token, 'No order from {}'.format(formatted_date))
-        restaurants = [b[3] for b in bentos]
+        restaurants = set([b[3] for b in bentos])
         reply_msg = 'You ordered from {} on {}'.format(' and '.join(restaurants), formatted_date)
         bento_cards = list(filter(None, [b if b[2] else None for b in bentos]))
         messages = [TextSendMessage(text=reply_msg)]
