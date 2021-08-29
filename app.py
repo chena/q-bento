@@ -258,9 +258,13 @@ def handle_message(event):
         return line_bot_api.reply_message(reply_token, messages)
       except ValueError as e:
         print('ERROR', e)
-        # 10. find restaurants from keywords
+        # 11. find restaurants from name or keywords
         found_restaurants = [generate_rest_info(b[0], b[1], b[2], b[3]) for b in from_keywords(option)]
-        if len(found_restaurants) > 0:
+        found_count = len(found_restaurants)
+        if found_count == 1:
+          found_rest = found_restaurants[0]
+          return bot_reply(reply_token, 'Some options for you from {}:\n {}'.format(found_rest[0], found_rest))
+        elif found_count > 0:
           return bot_reply(reply_token, 'Some {} options for you:\n {}'.format(option, '\n\n'.join(found_restaurants)))
         else:
           return bot_reply(reply_token, 'Sorry, no match found 😥')
