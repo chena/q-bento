@@ -298,13 +298,14 @@ def new_entry(user_id, room_id, restaurant_id, order_date, other_info=[]):
   if len(other_info) == 0:
     new_bento(user_id, restaurant_id, order_date, room_id)
   else:
+    free_tokens = ['free', '免費']
     items = None
     price = 0
-    if other_info[0].lower() == 'free' or other_info[0].isdigit() or other_info[0][0] == '$':
+    if other_info[0].lower() in  free_tokens or other_info[0].isdigit() or other_info[0][0] == '$':
       try:
         price = int(other_info[0])
       except:
-        if other_info[0].lower() != 'free':
+        if other_info[0].lower() not in free_tokens:
           price = int(other_info[0][1:])
       if len(other_info) > 1:
         items = ','.join(other_info[1:])
