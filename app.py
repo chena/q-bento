@@ -50,11 +50,9 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-# @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='42')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
 def lunch_push():
   freq_rest = [r[0] for r in get_frequent_rest()]
-  print('FREQ', freq_rest)
   messages = TextSendMessage(
     text='午安😎今天吃了什麼呢？', quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label=r, text='bento {} today'.format(r))) for r in freq_rest
@@ -417,7 +415,7 @@ def get_frequent_rest():
     FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
     WHERE r.dame IS NOT true AND r.available IS NOT false AND b.image NOTNULL
     GROUP BY r.name 
-    ORDER BY bcount DESC LIMIT 3
+    ORDER BY bcount DESC LIMIT 5
   """
   return __get_all(sql, ())
 
