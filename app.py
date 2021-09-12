@@ -51,9 +51,10 @@ scheduler.init_app(app)
 scheduler.start()
 
 # @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='38')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='42')
 def lunch_push():
   freq_rest = [r[0] for r in get_frequent_rest()]
+  print('FREQ', freq_rest)
   messages = TextSendMessage(
     text='午安😎今天吃了什麼呢？', quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label=r, text='bento {} today'.format(r))) for r in freq_rest
