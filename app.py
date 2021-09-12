@@ -51,12 +51,11 @@ scheduler.init_app(app)
 scheduler.start()
 
 # @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='34')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='36')
 def lunch_push():
   freq_rest = [r[0] for r in get_frequent_rest()]
-  line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
   messages = TextSendMessage(
-    text=usage, quick_reply=QuickReply(items=[
+    text='午安😎今天吃了什麼呢？', quick_reply=QuickReply(items=[
       QuickReplyButton(action=MessageAction(label=r, text='bento {} today'.format(r))) for r in freq_rest
     ])
   )
