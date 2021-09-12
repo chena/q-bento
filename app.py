@@ -51,7 +51,7 @@ scheduler.init_app(app)
 scheduler.start()
 
 # @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='36')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='38')
 def lunch_push():
   freq_rest = [r[0] for r in get_frequent_rest()]
   messages = TextSendMessage(
