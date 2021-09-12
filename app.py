@@ -50,13 +50,17 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='30')
+# @scheduler.task('cron', id='lunch_push', day_of_week='*', hour='4', minute='20')
+@scheduler.task('cron', id='lunch_push', day_of_week='*', hour='10', minute='34')
 def lunch_push():
-  last_bento_date = get_last_bento()[1]
-  if datetime.now().strftime(DATE_FORMAT) != str(last_bento_date):
-    line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
-  else:
-    print('BENTO reported!')
+  freq_rest = [r[0] for r in get_frequent_rest()]
+  line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(text='午安😎今天吃了什麼呢？'))
+  messages = TextSendMessage(
+    text=usage, quick_reply=QuickReply(items=[
+      QuickReplyButton(action=MessageAction(label=r, text='bento {} today'.format(r))) for r in freq_rest
+    ])
+  )
+  line_bot_api.push_message(LINE_GROUP_ID, messages)
 
 @scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='0')
 def morning_push():
@@ -406,6 +410,16 @@ def get_bentos(restaurant, room_id=None):
     ORDER BY order_date DESC;
   """
   return __get_all(sql, (name,))
+
+def get_frequent_rest():
+  sql = """
+    SELECT r.name, count(*) AS bcount
+    FROM bentos b JOIN restaurants r ON b.restaurant_id = r.id
+    WHERE r.dame IS NOT true AND r.available IS NOT false AND b.image NOTNULL
+    GROUP BY r.name 
+    ORDER BY bcount DESC LIMIT 3
+  """
+  return __get_all(sql, ())
 
 def get_old_bentos(again=False):
   sql = """
