@@ -11,10 +11,26 @@ Quarantine Bento ideas:
 * pick random restaurant from bucket list DONE
 * support bento image DONE
 * support add image from URL bento [rest] image url DONE
+
+NEW:
 * return all pics from restaurant DONE
-* refactoring
+* push message with scheduler DONE - WHY double message?
+* quick reply DONE
+* ngrok localhost DONE
+* bento what date -> return what you ate on that date DONE
+* uesage - quick reply buttons - DONE
+* refactor carousel DONE
+* parse OG image tag DONE
+* bento what - show carousel DONE
+* bento what keyword carousel DONE
+* include breaky? DONE
+* bento [rest] tabetai - show osusume
+* carousel from category "bento all", "coffee all", "breakfast all", "dessert all", etc
+* recognize emoji?
+* modify reply with user profile info (name)
+* multiple images for bento
+* category as keyword
 * aggregate data from different chat rooms - bento when, bento freq, bento total
-* take coffee/dessert as well?
 
 TODOs:
 * Readme documentation
