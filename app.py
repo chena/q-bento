@@ -60,7 +60,7 @@ def lunch_push():
   )
   line_bot_api.push_message(LINE_GROUP_ID, messages)
 
-@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='0')
+@scheduler.task('cron', id='morning_push', day_of_week='*', hour='3', minute='30')
 def morning_push():
   line_bot_api.push_message(LINE_GROUP_ID, TextSendMessage(
     text='早安☀️今天吃什麼呢？', quick_reply=QuickReply(items=[
@@ -272,7 +272,7 @@ def handle_message(event):
     # add restaurant to list
     if option.lower() == 'want' or option == '想吃':
       new_restaurant(restaurant)
-      # 11. add new restaurant
+      # 12. add new restaurant
       return bot_reply(reply_token, '👌🏼{} has been added to your 想吃清單🤤'.format(restaurant))
     # add image to bento
     if option.startswith('https:'):
@@ -281,10 +281,10 @@ def handle_message(event):
         last_order = check_last_order(restaurant)
         bento_id = last_order[0][3]
         __insert_or_update('UPDATE bentos SET image = %s WHERE id = %s', (binary_data, bento_id))
-        # 12. upload bento image
+        # 13. upload bento image
         return bot_reply(reply_token, 'Bento image from {} uploaded! 📸'.format(restaurant))
 
-  # 13. support more than 3 tokens - new bento entry
+  # 14. support more than 3 tokens - new bento entry
   restaurant_id = get_or_create_restaurant(restaurant)
   if token_count == 3:
     return bot_reply(reply_token, new_entry(user_id, room_id, restaurant_id, option))
