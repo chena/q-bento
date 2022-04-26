@@ -458,7 +458,8 @@ def get_bucket_list():
   sql = """
     SELECT r.name, r.phone, r.url, r.tabetai FROM restaurants r
     LEFT JOIN bentos b on b.restaurant_id = r.id
-    WHERE r.available is not false AND b.id isnull
+    WHERE r.available is not false AND b.id isnull AND r.created_at > '2022-03-01'
+    ORDER BY r.created_at desc
     LIMIT 10;
     """
   return __get_all(sql, ())
